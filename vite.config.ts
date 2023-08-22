@@ -13,7 +13,7 @@ export default defineConfig({
           manifest
       })
   ],
-  base: '/beast-companion/',
+  base: '/beast-digital-map/',
   build: {
     // outDir: 'docs'
   }
