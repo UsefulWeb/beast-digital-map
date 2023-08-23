@@ -1,8 +1,8 @@
-import cavesImg from "../../public/images/locations/caves.png?url";
-import forestImg from "../../public/images/locations/forest.png?url";
-import mixedImg from "../../public/images/locations/mixed.png?url";
-import settlementImg from "../../public/images/locations/settlement.png?url";
-import swampImg from "../../public/images/locations/swamp.png?url";
+import cavesImg from "../../src/images/locations/caves.png?url";
+import forestImg from "../../src/images/locations/forest.png?url";
+import mixedImg from "../../src/images/locations/mixed.png?url";
+import settlementImg from "../../src/images/locations/settlement.png?url";
+import swampImg from "../../src/images/locations/swamp.png?url";
 
 import {MapLocationType} from "./interfaces";
 

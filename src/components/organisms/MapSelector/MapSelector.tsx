@@ -2,15 +2,16 @@ import S from './MapSelector.module.scss';
 import {MapType} from "../../../util/interfaces";
 import {Button} from "../..";
 import classnames from "classnames";
+import classNames from "classnames";
 
 export const mapTypes = [
     {
-        type: MapType.SMALL,
-        title: '2-3 Players'
+        type: MapType.DRENCHED_LANDS,
+        title: <>the <br/>Drenched Lands</>
     },
     {
-        type: MapType.LARGE,
-        title: '4 Players'
+        type: MapType.NORTHERN_EXPANSE,
+        title: <>the Northern<br/>Expanse</>
     }
 ];
 
@@ -26,7 +27,7 @@ export const MapSelector = (props: MapSelectorProps) => {
           <div className={S.container}>
               {mapTypes.map(
                   (item, key: number) =>
-                      <Button key={key} onClick={() => onSelect(item.type)}>{item.title}</Button>
+                      <Button key={key} type={'fixed'} onClick={() => onSelect(item.type)}>{item.title}</Button>
               )}
           </div>
     );

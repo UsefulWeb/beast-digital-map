@@ -6,6 +6,7 @@ export interface ButtonProps extends PropsWithChildren {
     to?: string,
     as?: React.FC<any>,
     className?: string,
+    type?: string,
     onClick?: React.MouseEventHandler;
 }
 
@@ -17,8 +18,10 @@ export const Button = (props: ButtonProps) => {
     const {
         className,
         as = 'button',
+        type,
         ...rest
     } = props;
     const Component = as;
-    return <Component {...rest} className={classnames(className, S.container)} />;
+    const typeClass = S['type_' + type];
+    return <Component {...rest} className={classnames(className, S.container, typeClass)} />;
 }

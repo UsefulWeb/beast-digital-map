@@ -1,14 +1,14 @@
 .container {
   font-size: 40px;
   padding: 10px;
-  background: #ffa92c;
+  background-color: #ffa92c;
   border: none;
   color: #fff;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
   &:hover {
-    background: #fdd39b;
+    background-color: #fdd39b;
   }
   &:active {
     position: relative;
@@ -18,5 +18,22 @@
   @media (min-height: 768px) {
     font-size: 50px;
     padding: 20px;
+  }
+}
+
+.type_fixed {
+  background: url(../../../../public/images/button_background.png) center center no-repeat;
+  font-size: 10vw;
+  background-size: 100%;
+  padding: 0 0.633em;
+  width: 9.1195em;
+  height: 2.16em;
+  line-height: 0.8152;
+  &:hover {
+    background-color: transparent;
+    filter: brightness(0.9);
+  }
+  @media (min-width: 500px) {
+    font-size: 50px;
   }
 }

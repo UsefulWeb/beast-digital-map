@@ -1,8 +1,8 @@
 export enum MapType {
     NONE = 'none',
-    SMALL = 'small',
+    DRENCHED_LANDS = 'drenched-lands',
     SMALL_HD = 'small_hd',
-    LARGE = 'large',
+    NORTHERN_EXPANSE = 'northern-expanse',
     LARGE_HD = 'large_hd',
 }
 
