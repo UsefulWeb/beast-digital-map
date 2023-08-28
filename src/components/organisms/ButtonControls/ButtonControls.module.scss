@@ -15,9 +15,10 @@
 }
 
 .primary {
+  background: url(../../../../public/images/navigation_background.png) no-repeat;
+  background-size: cover;
   position: fixed;
-  background: #00000080;
-  padding: 1em 0;
+  padding: 1.5em 0;
 
   box-sizing: border-box;
   z-index: 3;
@@ -29,8 +30,19 @@
   flex-direction: column;
   justify-content: space-between;
 
-  box-shadow: 1px 0px 10px #ffffff20;
+  box-shadow: 1px 0 10px #ffffff20;
   font-size: 1.5vmin;
+  &:after {
+    content: '';
+    display: block;
+    width: 0.5em;
+    height: 100%;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: url(../../../../public/images/border_vertical.png) center center no-repeat;
+    background-size: cover;
+  }
   @media (orientation: landscape) {
     @media (min-height: 600px) {
       font-size: 10px;
@@ -47,12 +59,23 @@
     top: auto;
     height: auto;
     width: 100%;
+    &:after {
+      left: 0;
+      bottom: 100%;
+      background-image: url(../../../../public/images/border_horizontal.png);
+      height: 0.5em;
+      width: 100%;
+    }
     @media (min-height: 1024px) {
       padding: 0 2em 1em 1em;
       font-size: 12px;
 
       top: 0;
       bottom: auto;
+      &:after {
+        bottom: auto;
+        top: 100%;
+      }
     }
   }
 }
