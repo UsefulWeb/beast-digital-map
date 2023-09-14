@@ -1,0 +1,25 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: [ 'cp', 'gs://beast-minimap/$_ENV.env', './.env' ]
+    waitFor: [ '-' ]  # The '-' indicates that this step begins immediately.
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/$_PROJECT_ID/$_ENV-$_SERVICE/$_VERSION', '.' ]
+  # push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', 'gcr.io/$_PROJECT_ID/$_ENV-$_SERVICE/$_VERSION' ]
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [ 'run', 'deploy', '$_ENV-$_SERVICE', '--image', 'gcr.io/$_PROJECT_ID/$_ENV-$_SERVICE/$_VERSION', '--region', '$_REGION', '--clear-labels', '--update-labels', 'service=$_SERVICE', '--max-instances', '$_MAX_INSTANCES', '--concurrency', '$_CONCURRENCY','--timeout','$_TIMEOUT', '--platform', 'managed', '--allow-unauthenticated' ]
+images:
+  - 'gcr.io/$_PROJECT_ID/$_ENV-$_SERVICE/$_VERSION'
+timeout: 1200s
+substitutions:
+  _ENV: prod
+  _VERSION: 1.0.0
+  _SERVICE: beast-minimap
+  _PROJECT_ID: studio-midhall-prod
+  _REGION: europe-west1
+  _MAX_INSTANCES: '1'
+  _MIN_INSTANCES: '1'
+  _CONCURRENCY: '40'
+  _TIMEOUT: '500'
