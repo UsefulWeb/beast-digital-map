@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import 'dotenv/config';
 
 import manifest from './baseManifest';
 
@@ -13,7 +14,7 @@ export default defineConfig({
           manifest
       })
   ],
-  base: '/beast-digital-map/',
+  base: process.env.APP_BASE_PATH || '/beast-digital-map/',
   build: {
     // outDir: 'docs'
   }
