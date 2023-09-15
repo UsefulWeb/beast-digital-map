@@ -19,7 +19,6 @@ export const Home = () => {
                 Made by <a target={'_blank'} href={'https://github.com/neizerth'} className={S.author}>@neizerth</a>.
                 <br/>
                 Background and logo are made by <a target={'_blank'} href={'https://studiomidhall.com/'} className={S.author}>Studio Midhall</a>.
-                Maps are made by <a href="https://www.gaga-games.com/" target={'_blank'} className={S.author}>GaGa Games</a>.
             </div>
         </div>
     </>;
