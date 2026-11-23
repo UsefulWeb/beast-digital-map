@@ -1,10 +1,7 @@
-import {ActionCreator} from "@reduxjs/toolkit";
-import {AppThunk} from "../../store";
-import {resetLocationsType} from "../locations/locationsSlice";
-import {clearPath} from "../path/pathSlice";
+import { useLocationsStore } from '../locations/locationsSlice'
+import { usePathStore } from '../path/pathSlice'
 
-export const reset: ActionCreator<AppThunk> =  () =>
-    (dispatch) => {
-        dispatch(resetLocationsType());
-        dispatch(clearPath());
-    }
+export const reset = () => {
+  useLocationsStore.getState().resetLocationsType()
+  usePathStore.getState().clearPath()
+}

@@ -1,98 +1,109 @@
-import {MapLocation} from "../../molecules/MapLocation/MapLocation";
-import S from "../MapController/MapController.module.scss";
-import {IMapLocationItem, MapLocationType} from "../../../util/interfaces";
+import { MapLocation } from '../../../entities/location'
 import {
-    getLocationVisitsCount,
-    getLocationWait,
-    getWaitVisitsCount,
-    isLocationFirst,
-    isLocationLast,
-    isNextLocation
-} from "../../../helpers/locationPath";
-import {useAppDispatch, useAppSelector} from "../../../hooks";
-import {addPathItem, removePathItem, selectPathData} from "../../../features/path/pathSlice";
-import {GameMode, MAX_WAIT_SIZE} from "../../../util/common";
-import {selectMode} from "../../../features/gameMode/gameModeSlice";
-import {changeLocationType, selectLocations} from "../../../features/locations/locationsSlice";
-import {USER_LOCATION_TYPES} from "../../../util/locations";
+  getLocationVisitsCount,
+  getLocationWait,
+  isLocationFirst,
+  isLocationLast,
+  isNextLocation,
+} from '../../../entities/path'
+import {
+  selectMode,
+  useGameModeStore,
+} from '../../../features/gameMode/gameModeSlice'
+import {
+  selectLocations,
+  useLocationsStore,
+} from '../../../features/locations/locationsSlice'
+import {
+  addPathItem,
+  selectPathData,
+  usePathStore,
+} from '../../../features/path/pathSlice'
+import { GameMode, MAX_WAIT_SIZE } from '../../../shared/util/common'
+import type { IMapLocationItem } from '../../../shared/util/interfaces'
+import { USER_LOCATION_TYPES } from '../../../shared/util/locations'
+import S from '../MapController/MapController.module.scss'
 
 export interface MapLocationListProps {
-    ratio: number;
+  ratio: number
 }
 
 export const MapLocationList = (props: MapLocationListProps) => {
-    const {
-        ratio,
-    } = props;
+  const { ratio } = props
 
-    const gameMode = useAppSelector(selectMode);
-    const locations = useAppSelector(selectLocations);
+  const gameMode = useGameModeStore(selectMode)
+  const locations = useLocationsStore(selectLocations)
+  const locationPath = usePathStore(selectPathData)
+  const changeLocationType = useLocationsStore((s) => s.changeLocationType)
 
-    const dispatch = useAppDispatch();
-    const locationPath = useAppSelector(selectPathData);
-    const isFirst = (item: IMapLocationItem) => isLocationFirst(locationPath, item);
-    const isLast = (item: IMapLocationItem) => isLocationLast(locationPath, item);
-    const getVisitsCount = (item: IMapLocationItem) => getLocationVisitsCount(locationPath, item);
-    const isNext = (item: IMapLocationItem) => isNextLocation(locationPath, item);
-    const getWait = (item: IMapLocationItem) => getLocationWait(locationPath, item);
+  const isFirst = (item: IMapLocationItem) =>
+    isLocationFirst(locationPath, item)
+  const isLast = (item: IMapLocationItem) => isLocationLast(locationPath, item)
+  const getVisitsCount = (item: IMapLocationItem) =>
+    getLocationVisitsCount(locationPath, item)
+  const isNext = (item: IMapLocationItem) => isNextLocation(locationPath, item)
+  const getWait = (item: IMapLocationItem) =>
+    getLocationWait(locationPath, item)
 
-    const canClick = (item: IMapLocationItem) => {
-        if (locationPath.length === 0) {
-            return true;
-        }
-        const waitLeftCount = getWait(item).length;
-        if (isLast(item) && waitLeftCount < MAX_WAIT_SIZE) {
-            return true;
-        }
-        if (isNext(item)) {
-            return true;
-        }
-        return false;
+  const canClick = (item: IMapLocationItem) => {
+    if (locationPath.length === 0) {
+      return true
     }
-
-    const visitLocation = (item: IMapLocationItem) => dispatch(
-        addPathItem(item)
-    );
-
-    const switchLocationType = (item: IMapLocationItem) => {
-        const locationTypesList = USER_LOCATION_TYPES
-            .filter(type => type !== item.defaultType)
-            .concat([item.defaultType]);
-        const currentTypeIndex = locationTypesList.indexOf(item.type);
-        const nextTypeIndex = currentTypeIndex === locationTypesList.length - 1 ? 0 : currentTypeIndex + 1;
-        const nextType = locationTypesList[nextTypeIndex];
-
-        dispatch(
-            changeLocationType(item, nextType)
-        );
+    const waitLeftCount = getWait(item).length
+    if (isLast(item) && waitLeftCount < MAX_WAIT_SIZE) {
+      return true
     }
-    const onClick = (item: IMapLocationItem) => {
-        if (gameMode === GameMode.LOCATIONS) {
-            return switchLocationType(item)
-        }
-        if (!canClick(item)) {
-            return;
-        }
-        visitLocation(item);
+    if (isNext(item)) {
+      return true
     }
+    return false
+  }
 
-    return <>
-        {locations.map((item, key) => (
-            <MapLocation
-                {...item}
-                onClick={() => onClick(item)}
-                isFirst={isFirst(item)}
-                isLast={isLast(item)}
-                isNext={isNext(item)}
-                waitList={getWait(item)}
-                visitsCount={getVisitsCount(item)}
-                className={S.location}
-                type={item.type}
-                isDefaultType={item.type === item.defaultType}
-                ratio={ratio}
-                key={key}
-                gameMode={gameMode}
-            />
-        ))}
+  const visitLocation = (item: IMapLocationItem) => addPathItem(item)
+
+  const switchLocationType = (item: IMapLocationItem) => {
+    const locationTypesList = USER_LOCATION_TYPES.filter(
+      (type) => type !== item.defaultType,
+    ).concat([item.defaultType])
+    const currentTypeIndex = locationTypesList.indexOf(item.type)
+    const nextTypeIndex =
+      currentTypeIndex === locationTypesList.length - 1
+        ? 0
+        : currentTypeIndex + 1
+    const nextType = locationTypesList[nextTypeIndex]
+
+    changeLocationType(item, nextType)
+  }
+
+  const onClick = (item: IMapLocationItem) => {
+    if (gameMode === GameMode.LOCATIONS) {
+      return switchLocationType(item)
+    }
+    if (!canClick(item)) {
+      return
+    }
+    visitLocation(item)
+  }
+
+  return (
+    <>
+      {locations.map((item, key) => (
+        <MapLocation
+          {...item}
+          onClick={() => onClick(item)}
+          isFirst={isFirst(item)}
+          isLast={isLast(item)}
+          isNext={isNext(item)}
+          waitList={getWait(item)}
+          visitsCount={getVisitsCount(item)}
+          className={S.location}
+          type={item.type}
+          isDefaultType={item.type === item.defaultType}
+          ratio={ratio}
+          key={key}
+          gameMode={gameMode}
+        />
+      ))}
     </>
+  )
 }

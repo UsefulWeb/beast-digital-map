@@ -1,31 +1,34 @@
-import classnames from "classnames";
-import S from "./ResetLocationsTypeButton.module.scss";
-import {GameControl} from "../..";
-import {useAppDispatch, useAppSelector} from "../../../hooks";
-import {resetLocationsType, selectLocations} from "../../../features/locations/locationsSlice";
-import clearLocationsIcon from "../../../../public/images/clear_locations.svg";
+import classnames from 'classnames'
+import clearLocationsIcon from '../../../../public/images/clear_locations.svg'
+import {
+  selectLocations,
+  useLocationsStore,
+} from '../../../features/locations/locationsSlice'
+import { IconButton } from '../../../shared/ui'
+import S from './ResetLocationsTypeButton.module.scss'
 
 export interface ResetLocationsTypeButtonProps {
-    className?: string;
+  className?: string
 }
 
-export const ResetLocationsTypeButton = (props: ResetLocationsTypeButtonProps) => {
-    const { className } = props;
+export const ResetLocationsTypeButton = (
+  props: ResetLocationsTypeButtonProps,
+) => {
+  const { className } = props
 
-    const locations = useAppSelector(selectLocations);
-    const modifiedLocationsCount = locations
-        .filter(item => item.type !== item.defaultType)
-        .length;
-    const dispatch = useAppDispatch();
-    const resetLocations = () => dispatch(resetLocationsType());
+  const locations = useLocationsStore(selectLocations)
+  const resetLocationsType = useLocationsStore((s) => s.resetLocationsType)
+  const modifiedLocationsCount = locations.filter(
+    (item) => item.type !== item.defaultType,
+  ).length
 
-    return (
-        <GameControl
-            onClick={() => resetLocations()}
-            className={classnames(S.container, className)}
-            disabled={modifiedLocationsCount === 0}
-            icon={clearLocationsIcon}
-            name={"Clear Locations"}
-        />
-    );
+  return (
+    <IconButton
+      onClick={() => resetLocationsType()}
+      className={classnames(S.container, className)}
+      disabled={modifiedLocationsCount === 0}
+      icon={clearLocationsIcon}
+      name={'Clear Locations'}
+    />
+  )
 }

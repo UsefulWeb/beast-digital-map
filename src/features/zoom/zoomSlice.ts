@@ -1,30 +1,13 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {AppSelector} from "../../store";
+import { create } from 'zustand'
 
-export interface ISetZoomState {
-    scale: number;
+export interface IZoomState {
+  scale: number
+  setZoom: (scale: number) => void
 }
 
-export type ISetZoomPayload = PayloadAction<number>;
+export const useZoomStore = create<IZoomState>((set) => ({
+  scale: 1,
+  setZoom: (scale) => set({ scale }),
+}))
 
-const initialState: ISetZoomState = {
-    scale: 1
-}
-
-export const pathSlice = createSlice({
-    name: 'zoom',
-    initialState,
-    reducers: {
-        setZoom(state,action: ISetZoomPayload) {
-            state.scale = action.payload;
-        },
-    }
-});
-
-export const {
-    setZoom
-} = pathSlice.actions;
-
-export const selectZoomScale: AppSelector<number> = ({ zoom }) => zoom.scale;
-
-export default pathSlice.reducer;
+export const selectZoomScale = (state: IZoomState) => state.scale

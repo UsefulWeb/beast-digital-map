@@ -1,0 +1,12 @@
+colors: false
+
+pre-commit:
+  commands:
+    biome:
+      run: yarn biome check --write --staged --no-errors-on-unmatched --colors=off
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: yarn commitlint --edit {1}

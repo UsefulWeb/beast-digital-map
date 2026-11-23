@@ -1,49 +1,50 @@
-import S from "./HistoryControls.module.scss"
-import {GameControl} from "../..";
-import {redo, selectHistoryData, selectHistoryIndex, undo} from "../../../features/history/historySlice";
-import {useAppDispatch, useAppSelector} from "../../../hooks";
-import classnames from "classnames";
-
-import undoIcon from "../../../../public/images/undo.svg";
-import redoIcon from "../../../../public/images/redo.svg";
+import classnames from 'classnames'
+import redoIcon from '../../../../public/images/redo.svg'
+import undoIcon from '../../../../public/images/undo.svg'
+import {
+  redo,
+  selectHistoryData,
+  selectHistoryIndex,
+  undo,
+  useHistoryStore,
+} from '../../../features/history/historySlice'
+import { IconButton } from '../../../shared/ui'
+import S from './HistoryControls.module.scss'
 
 export interface HistoryControlsProps {
-    controlClassName?: string;
+  controlClassName?: string
 }
 
 export const HistoryControls = (props: HistoryControlsProps) => {
-    const historyIndex = useAppSelector(selectHistoryIndex);
-    const history = useAppSelector(selectHistoryData);
+  const historyIndex = useHistoryStore(selectHistoryIndex)
+  const history = useHistoryStore(selectHistoryData)
 
-    const dispatch = useAppDispatch();
+  const isHistoryEmpty = history.length === 0
+  const isUndoDisabled = isHistoryEmpty || historyIndex < 2
+  const isRedoDisabled = isHistoryEmpty || historyIndex === history.length - 1
 
-    const isHistoryEmpty = history.length === 0;
-    const isUndoDisabled = isHistoryEmpty || historyIndex < 2;
-    const isRedoDisabled = isHistoryEmpty || historyIndex === history.length - 1;
+  const controlClassName = classnames(props.controlClassName, S.control)
 
-    const handleUndo = () => dispatch(undo());
-    const handleRedo = () => dispatch(redo());
-
-    const controlClassName = classnames(props.controlClassName, S.control);
-
-    return <>
-        <div className={controlClassName}>
-            <GameControl
-                onClick={handleUndo}
-                className={S.undo}
-                icon={undoIcon}
-                name={"Undo"}
-                disabled={isUndoDisabled}
-            />
-        </div>
-        <div className={controlClassName}>
-            <GameControl
-                onClick={handleRedo}
-                className={S.redo}
-                icon={redoIcon}
-                name={"Redo"}
-                disabled={isRedoDisabled}
-            />
-        </div>
-    </>;
+  return (
+    <>
+      <div className={controlClassName}>
+        <IconButton
+          onClick={() => undo()}
+          className={S.undo}
+          icon={undoIcon}
+          name={'Undo'}
+          disabled={isUndoDisabled}
+        />
+      </div>
+      <div className={controlClassName}>
+        <IconButton
+          onClick={() => redo()}
+          className={S.redo}
+          icon={redoIcon}
+          name={'Redo'}
+          disabled={isRedoDisabled}
+        />
+      </div>
+    </>
+  )
 }

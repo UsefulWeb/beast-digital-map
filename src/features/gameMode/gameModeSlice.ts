@@ -1,31 +1,16 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {GameMode} from "../../util/common";
-import {AppSelector} from "../../store";
+import { create } from 'zustand'
+import { GameMode } from '../../shared/util/common'
 
 export interface IGameModeState {
-    mode: GameMode
+  mode: GameMode
+  setGameMode: (mode: GameMode) => void
 }
 
-const initialState: IGameModeState = {
-    mode: GameMode.PATH
-};
+export const useGameModeStore = create<IGameModeState>((set) => ({
+  mode: GameMode.PATH,
+  setGameMode: (mode) => set({ mode }),
+}))
 
-export type IToggleModePayload = PayloadAction<GameMode>;
+export const selectMode = (state: IGameModeState) => state.mode
 
-export const gameModeSlice = createSlice({
-    name: 'mode',
-    initialState,
-    reducers: {
-        setGameMode(state, action: IToggleModePayload) {
-            state.mode = action.payload;
-        }
-    }
-});
-
-export const {
-    setGameMode
-} = gameModeSlice.actions;
-
-export const selectMode: AppSelector<GameMode> = ({ gameMode }) => gameMode.mode;
-
-export default gameModeSlice.reducer;
+export const useGameMode = () => useGameModeStore(selectMode)
