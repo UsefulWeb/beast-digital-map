@@ -1,10 +1,10 @@
+import type { MapSize } from '@entities/map'
 import { useEffect, useState } from 'react'
-import type { IMapSize } from '../../util/interfaces'
 
-export const getImageSize = (defaultSize?: IMapSize) => {
+export const getImageSize = (defaultSize?: MapSize) => {
   const { innerWidth, innerHeight } = window
   if (!defaultSize) {
-    return [innerWidth, innerHeight, 1]
+    return [innerWidth, innerHeight, 1] as const
   }
 
   let height = innerHeight - 4
@@ -17,10 +17,10 @@ export const getImageSize = (defaultSize?: IMapSize) => {
     height = ratio * defaultSize.height
   }
 
-  return [width, height, ratio]
+  return [width, height, ratio] as const
 }
 
-export const useImageSize = (imageSize: IMapSize) => {
+export const useImageSize = (imageSize: MapSize) => {
   const [size, setSize] = useState(() => getImageSize(imageSize))
 
   useEffect(() => {

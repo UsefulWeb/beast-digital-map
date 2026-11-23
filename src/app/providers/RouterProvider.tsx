@@ -1,15 +1,15 @@
+import { Home, Route } from '@pages/index'
 import { Router, Switch, Route as WouterRoute } from 'wouter'
 import { useHashLocation } from 'wouter/use-hash-location'
-import { Home, Route } from '../../pages'
-import S from './RouterProvider.module.scss'
+import { AppShell } from '../ui'
 
 export const RouterProvider = () => (
   <Router hook={useHashLocation}>
-    <div className={S.app}>
+    <AppShell>
       <Switch>
         <WouterRoute path="/" component={Home} />
         <WouterRoute path="/map/:type" component={Route} />
       </Switch>
-    </div>
+    </AppShell>
   </Router>
 )

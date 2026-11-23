@@ -1,21 +1,20 @@
+import type { LocationItem } from '@entities/location'
+import { half, scale } from '@shared/lib/math'
+import { palette } from '@shared/styles'
 import Color from 'color'
-import { half, scale, vw } from '../../../shared/util/common'
-import type {
-  ILocationLinkItem,
-  IMapLocationItem,
-} from '../../../shared/util/interfaces'
+import type { PathNode } from '../model/types'
 
 export type IPoint = [number, number]
-export const getLocationCenter = (item: IMapLocationItem): IPoint => {
+export const getLocationCenter = (item: LocationItem): IPoint => {
   const { top, left, size } = item
   return [left + half(size), top + half(size)]
 }
 export const getCenter = (p0: IPoint, p1: IPoint): IPoint => {
   return [half(p0[0] + p1[0]), half(p0[1] + p1[1])]
 }
-const BASE_CURVINESS = 16
-const NEGATIVE_CURVINESS = [-40, -24, -20, -18, -17]
-const POSITIVE_CURVINESS = [20, 18]
+const BASE_CURVINESS = 40
+const NEGATIVE_CURVINESS = [-72, -58, -48, -40, -36]
+const POSITIVE_CURVINESS = [64, 52, 44]
 export const getCurviness = (visitIndex: number) => {
   const isOdd = visitIndex % 2 !== 0
   const sign = isOdd ? 1 : -1
@@ -27,8 +26,8 @@ export const getCurviness = (visitIndex: number) => {
 }
 
 export interface GetControlPointOptions {
-  source: ILocationLinkItem
-  target: ILocationLinkItem
+  source: PathNode
+  target: PathNode
   visitIndex: number
   ratio?: number
 }
@@ -59,16 +58,16 @@ export const getControlPoint = (options: GetControlPointOptions): IPoint => {
 }
 
 export const getStroke = (index: number, total: number, visitIndex: number) => {
-  const orange = Color('#ff780a')
-  const red = Color('#ff2626')
-  const end = Color('#006778')
+  const orange = Color(palette.hover)
+  const start = Color(palette.markerStart)
+  const end = Color(palette.markerEnd)
   const white = Color('#fff')
 
   if (index === total - 1) {
     return end
   }
   if (visitIndex === 0) {
-    return red
+    return start
   }
   if (visitIndex === 1) {
     return white
@@ -123,8 +122,8 @@ export interface CreatePathOptions {
   strokeWidth: number
   ratio: number
   visitIndex: number
-  source: ILocationLinkItem
-  target: ILocationLinkItem
+  source: PathNode
+  target: PathNode
 }
 
 export const getSkew = (from: IPoint, to: IPoint) => {
@@ -149,18 +148,10 @@ export const rad2deg = (rad: number) => (rad * 180) / Math.PI
 
 const getCircleOffset = (from: IPoint, to: IPoint, radius: number): IPoint => {
   const skewRad = getSkew(from, to)
-  const halfPI = half(Math.PI)
-
-  const absRad = skewRad % halfPI
-
-  // const skewDeg = rad2deg(skewRad);
   const x = Math.sin(skewRad)
   const y = Math.cos(skewRad)
 
-  const dX = x * radius
-  const dY = y * radius
-
-  return [dX, dY]
+  return [x * radius, y * radius]
 }
 
 export enum PathRenderItemType {
@@ -184,10 +175,10 @@ export interface PathRenderItem {
   }
 }
 
-const createPathRenderItem = (type: PathRenderItemType, points?: IPoint[]) => ({
-  type,
-  points,
-})
+const createPathRenderItem = (
+  type: PathRenderItemType,
+  points?: IPoint[],
+): PathRenderItem => (points ? { type, points } : { type })
 
 const arc = (
   point: IPoint,
@@ -207,7 +198,6 @@ const arc = (
 const beginPath = () => createPathRenderItem(PathRenderItemType.BEGIN_PATH)
 const closePath = () => createPathRenderItem(PathRenderItemType.CLOSE_PATH)
 const fill = () => createPathRenderItem(PathRenderItemType.FILL)
-const stroke = () => createPathRenderItem(PathRenderItemType.STROKE)
 
 const moveTo = (point: IPoint): PathRenderItem =>
   createPathRenderItem(PathRenderItemType.MOVE_TO, [point])
@@ -220,8 +210,6 @@ const quadraticCurveTo = (control: IPoint, to: IPoint): PathRenderItem =>
 
 const add = (offset: IPoint) => (point: IPoint) =>
   [point[0] + offset[0], point[1] + offset[1]] as IPoint
-const subtract = (base: IPoint) => (point: IPoint) =>
-  [point[0] - base[0], point[1] - base[1]] as IPoint
 
 export const scalePoint = (ratio: number) => (p: IPoint) =>
   p.map((x) => scale(x, ratio)) as IPoint
@@ -230,8 +218,8 @@ export const createPath = (options: CreatePathOptions) => {
   const { ratio, source, target, strokeWidth, visitIndex } = options
 
   const makeMainLine = (points: IPoint[]) => {
-    const [from, to, control] = points
-    return [moveTo(from), quadraticCurveTo(control, to)]
+    const [from, , control] = points
+    return [moveTo(from), quadraticCurveTo(control, points[1])]
   }
 
   const fromPoint = getLocationCenter(source.location)
@@ -254,17 +242,7 @@ export const createPath = (options: CreatePathOptions) => {
   const topPoints = [from, to, control].map(add(topLineOffset))
   const bottomPoints = [to, from, control].map(add(bottomLineOffset))
 
-  const simpleLine = [
-    beginPath(),
-    moveTo(topPoints[0]),
-    lineTo(bottomPoints[0]),
-    lineTo(bottomPoints[1]),
-    lineTo(topPoints[1]),
-    closePath(),
-    fill(),
-  ]
-
-  const path = [
+  return [
     beginPath(),
     arc(from, R, 0, 2 * Math.PI),
     closePath(),
@@ -285,6 +263,4 @@ export const createPath = (options: CreatePathOptions) => {
     closePath(),
     fill(),
   ]
-
-  return path
 }

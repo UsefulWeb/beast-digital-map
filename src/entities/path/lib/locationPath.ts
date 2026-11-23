@@ -1,26 +1,18 @@
-import type {
-  ILocationPath,
-  IMapLocationItem,
-} from '../../../shared/util/interfaces'
+import type { LocationItem } from '@entities/location'
+import type { Path } from '../model/types'
 
-export const getLocationItem = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
-) => path.find((item) => eq(item, locationItem))
+export const getLocationItem = (path: Path, locationItem: LocationItem) =>
+  path.find((item) => eq(item, locationItem))
 
-export const isLocationExists = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
-) => getLocationItem(path, locationItem) !== undefined
+export const isLocationExists = (path: Path, locationItem: LocationItem) =>
+  getLocationItem(path, locationItem) !== undefined
 
-export const findLocationIndex = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
-) => path.findIndex((item) => eq(item, locationItem))
+export const findLocationIndex = (path: Path, locationItem: LocationItem) =>
+  path.findIndex((item) => eq(item, locationItem))
 
 export const findLastLocationIndex = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
+  path: Path,
+  locationItem: LocationItem,
 ) => {
   for (let i = path.length; i--; ) {
     if (eq(path[i], locationItem)) {
@@ -29,25 +21,19 @@ export const findLastLocationIndex = (
   }
 }
 
-export const isLocationFirst = (path: ILocationPath, item: IMapLocationItem) =>
+export const isLocationFirst = (path: Path, item: LocationItem) =>
   path.length > 0 && findLocationIndex(path, item) === 0
 
-export const isLocationLast = (path: ILocationPath, item: IMapLocationItem) =>
+export const isLocationLast = (path: Path, item: LocationItem) =>
   path.length > 0 && findLastLocationIndex(path, item) === path.length - 1
 
-export type IPathItemAction = (
-  path: ILocationPath,
-  item: IMapLocationItem,
-) => ILocationPath
+export type PathItemAction = (path: Path, item: LocationItem) => Path
 
-export const addLocation = (path: ILocationPath, item: IMapLocationItem) => [
-  ...path,
-  item,
-]
+export const addLocation = (path: Path, item: LocationItem) => [...path, item]
 
 export const clearLocationPath = () => []
 
-export const removeLocation = (path: ILocationPath, item: IMapLocationItem) => {
+export const removeLocation = (path: Path, item: LocationItem) => {
   const index = findLastLocationIndex(path, item)
   if (index === undefined) {
     return path
@@ -55,12 +41,12 @@ export const removeLocation = (path: ILocationPath, item: IMapLocationItem) => {
   return [...path.slice(0, index), ...path.slice(index + 1)]
 }
 
-export const eq = (item1?: IMapLocationItem, item2?: IMapLocationItem) =>
+export const eq = (item1?: LocationItem, item2?: LocationItem) =>
   item1 && item2 && item1?.index === item2?.index
 
 export const getLocationVisitsCount = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
+  path: Path,
+  locationItem: LocationItem,
 ) =>
   path.reduce((total, item, index, self) => {
     if (!eq(item, locationItem)) {
@@ -72,7 +58,7 @@ export const getLocationVisitsCount = (
     return total + 1
   }, 0)
 
-export const getWaitVisits = (path: ILocationPath) => {
+export const getWaitVisits = (path: Path) => {
   const data = path.reduce((total, item, index, self) => {
     if (eq(item, self[index - 1])) {
       total.push(index)
@@ -96,13 +82,9 @@ export const groupWaitVisits = (waitList: number[]) => {
   })
 }
 
-export const getWaitVisitsCount = (path: ILocationPath) =>
-  getWaitVisits(path).length
+export const getWaitVisitsCount = (path: Path) => getWaitVisits(path).length
 
-export const getLocationWait = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
-) => {
+export const getLocationWait = (path: Path, locationItem: LocationItem) => {
   const data = path.reduce((total, item, index, self) => {
     if (eq(item, locationItem) && eq(item, self[index - 1])) {
       total.push(index)
@@ -112,16 +94,11 @@ export const getLocationWait = (
   return groupWaitVisits(data)
 }
 
-export const getLocationWaitCount = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
-) => getLocationWait(path, locationItem).length
+export const getLocationWaitCount = (path: Path, locationItem: LocationItem) =>
+  getLocationWait(path, locationItem).length
 
-export const getLocationVisits = (
-  path: ILocationPath,
-  locationItem: IMapLocationItem,
-) =>
-  path.reduce((target, item, index, self) => {
+export const getLocationVisits = (path: Path, locationItem: LocationItem) =>
+  path.reduce((target, _item, index, self) => {
     if (eq(self[index], locationItem)) {
       target.push(index)
     }
@@ -129,15 +106,15 @@ export const getLocationVisits = (
   }, [] as number[])
 
 export const getLocationVisitIndex = (
-  path: ILocationPath,
-  item: IMapLocationItem,
+  path: Path,
+  item: LocationItem,
   start = 0,
 ) => getLocationVisits(path, item).findIndex((index) => index >= start) || 0
 
 export const getMutualLocationsVisits = (
-  path: ILocationPath,
-  from: IMapLocationItem,
-  to: IMapLocationItem,
+  path: Path,
+  from: LocationItem,
+  to: LocationItem,
 ) =>
   path.reduce((target, item, index, self) => {
     if (index === 0) {
@@ -156,16 +133,16 @@ export const getMutualLocationsVisits = (
   }, [] as number[])
 
 export const getMutualLocationsVisitIndex = (
-  path: ILocationPath,
-  from: IMapLocationItem,
-  to: IMapLocationItem,
+  path: Path,
+  from: LocationItem,
+  to: LocationItem,
   start = 0,
 ) =>
   getMutualLocationsVisits(path, from, to).findIndex(
     (index) => index >= start,
   ) || 0
 
-export const isNextLocation = (path: ILocationPath, item: IMapLocationItem) => {
+export const isNextLocation = (path: Path, item: LocationItem) => {
   const last = path[path.length - 1]
   if (!last) {
     return false
@@ -174,13 +151,12 @@ export const isNextLocation = (path: ILocationPath, item: IMapLocationItem) => {
   return links.includes(item.index)
 }
 
-export const startFromLocation = (
-  location: IMapLocationItem | null,
-): ILocationPath => (location ? [location] : [])
+export const startFromLocation = (location: LocationItem | null): Path =>
+  location ? [location] : []
 
 export const getLocationDirectedLinks = (
-  locations: IMapLocationItem[],
-  item: IMapLocationItem,
+  locations: LocationItem[],
+  item: LocationItem,
 ) => {
   const { links = [] } = item
 

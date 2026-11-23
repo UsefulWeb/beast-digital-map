@@ -1,24 +1,42 @@
+import { MAP_CATALOG, type MapId } from '@entities/map'
+import { BASE_URL } from '@shared/config'
+import { Button, Stack } from '@shared/ui'
 import { useLocation } from 'wouter'
-import { MapSelector } from '../../../components/organisms/MapSelector/MapSelector'
-import { BASE_URL } from '../../../shared/config'
 import { Credits } from './Credits'
-import S from './Home.module.scss'
+import { HomeLayout } from './HomeLayout'
+import { HomeLogo } from './HomeLogo'
 
-const logo = `${BASE_URL}images/logo_small.png`
+const logo = `${BASE_URL}images/ui/logo.png`
 
 export const Home = () => {
   const [, setLocation] = useLocation()
-  const onMapSelect = (type: string) => {
-    setLocation(`/map/${type}`)
-  }
 
   return (
-    <div className={S.container}>
-      <div className={S.image__container}>
-        <img className={S.logo} src={logo} alt="Beast logo" />
-      </div>
-      <MapSelector onSelect={onMapSelect} />
+    <HomeLayout>
+      <HomeLogo src={logo} alt="Beast logo" />
+      <Stack align="center" gap={10}>
+        {MAP_CATALOG.map((item) => (
+          <Button
+            key={item.id}
+            variant="fixed"
+            onClick={() => setLocation(`/map/${item.id as MapId}`)}
+          >
+            {item.title.includes('Northern') ? (
+              <>
+                the Northern
+                <br />
+                Expanse
+              </>
+            ) : (
+              <>
+                the <br />
+                Drenched Lands
+              </>
+            )}
+          </Button>
+        ))}
+      </Stack>
       <Credits />
-    </div>
+    </HomeLayout>
   )
 }

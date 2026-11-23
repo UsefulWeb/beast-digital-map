@@ -1,3 +1,7 @@
 export * from './calculatePath'
+export * from './canClick'
+export * from './history'
 export * from './locationPath'
+export * from './movement'
 export * from './pathList'
+export * from './svgPath'

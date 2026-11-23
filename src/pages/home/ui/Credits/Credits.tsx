@@ -1,27 +1,12 @@
-import S from './Credits.module.scss'
+import { CreditsBox } from '../CreditsBox'
+import { CreditsLink } from '../CreditsLink'
 
 export const Credits = () => (
-  <div className={S.credits}>
+  <CreditsBox>
     Made by{' '}
-    <a
-      target={'_blank'}
-      href={'https://github.com/neizerth'}
-      className={S.author}
-      rel="noopener"
-    >
-      @neizerth
-    </a>
-    .
+    <CreditsLink href="https://github.com/neizerth">@neizerth</CreditsLink>.
     <br />
     Background and logo are made by{' '}
-    <a
-      target={'_blank'}
-      href={'https://studiomidhall.com/'}
-      className={S.author}
-      rel="noopener"
-    >
-      Studio Midhall
-    </a>
-    .
-  </div>
+    <CreditsLink href="https://studiomidhall.com/">Studio Midhall</CreditsLink>.
+  </CreditsBox>
 )

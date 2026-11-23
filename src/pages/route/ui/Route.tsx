@@ -1,103 +1,129 @@
-import { useEffect, useState } from 'react'
-import { useParams } from 'wouter'
-import { MapController } from '../../../components/organisms/MapController/MapController'
-import { useGameModeStore } from '../../../features/gameMode/gameModeSlice'
-import { useLocationsStore } from '../../../features/locations/locationsSlice'
-import { usePathStore } from '../../../features/path/pathSlice'
-import { useImageDownloadProgress } from '../../../shared/lib'
-import { Progress } from '../../../shared/ui'
-import { GameMode } from '../../../shared/util/common'
+import { GameMode, setGameMode } from '@entities/game'
+import { setLocations, useLocationsStore } from '@entities/location'
 import {
-  type IMapData,
-  type IMapJSONData,
-  type IMapJSONItem,
-  MapType,
-} from '../../../shared/util/interfaces'
-import { maps } from '../../../shared/util/maps'
-import S from './Route.module.scss'
+  clearMapResource,
+  getMapInfo,
+  isMapId,
+  type MapId,
+  preloadMapAssets,
+  readMapData,
+} from '@entities/map'
+import { startFrom } from '@entities/path'
+import { exitAppFullscreen, requestAppFullscreen } from '@shared/lib'
+import { ErrorFallback, Progress } from '@shared/ui'
+import { Board } from '@widgets/board'
+import { Component, type ReactNode, Suspense, useEffect, useState } from 'react'
+import { useLocation, useParams } from 'wouter'
 
-const loadMapData = async (type: MapType): Promise<IMapData | null> => {
-  if (type === MapType.NONE || !maps[type]) {
-    return null
-  }
+const MapBoard = (props: { mapId: MapId }) => {
+  const data = readMapData(props.mapId)
+  const info = getMapInfo(props.mapId)
+  const setMapId = useLocationsStore((s) => s.setMapId)
 
-  const url = maps[type].data
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to load map data: ${response.status}`)
-  }
-  const data = (await response.json()) as IMapJSONData
+  useEffect(() => {
+    const startLocation = data.items[data.settings.startLocation]
+    setGameMode(GameMode.PATH)
+    setLocations(data.items)
+    setMapId(props.mapId)
+    startFrom(startLocation)
+  }, [data, props.mapId, setMapId])
 
-  const [width, height, defaultSize, startLocation] = data[0]
-
-  const items = data[1].map((item: IMapJSONItem, index) => {
-    const [top, left, links, locationType, size = defaultSize] = item
-    return {
-      index,
-      defaultType: locationType,
-      type: locationType,
-      top,
-      left,
-      size,
-      links,
+  useEffect(() => {
+    void requestAppFullscreen()
+    return () => {
+      void exitAppFullscreen()
     }
-  })
+  }, [])
 
-  return {
-    settings: {
-      type,
-      width,
-      height,
-      defaultSize,
-      startLocation,
-    },
-    items,
+  if (!info) {
+    throw new Error(`Unknown map: ${props.mapId}`)
   }
+
+  return <Board mapUrl={info.image} data={data} />
+}
+
+type ErrorCatcherProps = {
+  children: ReactNode
+  onError: (error: Error) => void
+  resetKey: string
+}
+
+class ErrorCatcher extends Component<
+  ErrorCatcherProps,
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null }
+
+  static getDerivedStateFromError(error: Error) {
+    return { error }
+  }
+
+  componentDidCatch(error: Error) {
+    this.props.onError(error)
+  }
+
+  componentDidUpdate(prevProps: ErrorCatcherProps) {
+    if (prevProps.resetKey !== this.props.resetKey && this.state.error) {
+      this.setState({ error: null })
+    }
+  }
+
+  render() {
+    if (this.state.error) {
+      return null
+    }
+    return this.props.children
+  }
+}
+
+const RouteBody = (props: { mapId: MapId; onHome: () => void }) => {
+  const { mapId, onHome } = props
+  const [error, setError] = useState<Error | null>(null)
+
+  if (error) {
+    return (
+      <ErrorFallback
+        title="Failed to load map"
+        message={error.message}
+        onRetry={() => {
+          clearMapResource(mapId)
+          setError(null)
+        }}
+        onHome={onHome}
+      />
+    )
+  }
+
+  return (
+    <Suspense fallback={<Progress value={30} />}>
+      <ErrorCatcher resetKey={mapId} onError={setError}>
+        <MapBoard mapId={mapId} />
+      </ErrorCatcher>
+    </Suspense>
+  )
 }
 
 export const Route = () => {
   const params = useParams<{ type: string }>()
-  const type = (params.type as MapType) || MapType.NONE
-  const [mapData, setMapData] = useState<IMapData | null>(null)
-
-  const mapInfo = maps[type]
-  const progress = useImageDownloadProgress(mapInfo?.image ?? '')
-
-  const setGameMode = useGameModeStore((s) => s.setGameMode)
-  const setLocations = useLocationsStore((s) => s.setLocations)
-  const startFrom = usePathStore((s) => s.startFrom)
+  const [, setLocation] = useLocation()
+  const rawType = params.type ?? ''
+  const mapId = isMapId(rawType) ? rawType : null
 
   useEffect(() => {
-    let cancelled = false
-    loadMapData(type).then((data) => {
-      if (!cancelled) {
-        setMapData(data)
-      }
-    })
-    return () => {
-      cancelled = true
+    if (mapId) {
+      preloadMapAssets(mapId)
     }
-  }, [type])
+  }, [mapId])
 
-  useEffect(() => {
-    if (!mapData) {
-      return
-    }
-    const startLocation = mapData.items[mapData.settings.startLocation]
-    setGameMode(GameMode.PATH)
-    setLocations(mapData.items)
-    startFrom(startLocation)
-  }, [mapData, setGameMode, setLocations, startFrom])
+  if (!mapId) {
+    return (
+      <ErrorFallback
+        title="Unknown map"
+        message={`Map "${rawType}" was not found.`}
+        onHome={() => setLocation('/')}
+      />
+    )
+  }
 
-  const isLoaded = Boolean(mapData) && progress === 100
-
-  return (
-    <div className={S.container}>
-      {!isLoaded || !mapData ? (
-        <Progress value={progress} />
-      ) : (
-        <MapController mapUrl={mapInfo.image} data={mapData} />
-      )}
-    </div>
-  )
+  return <RouteBody mapId={mapId} onHome={() => setLocation('/')} />
 }

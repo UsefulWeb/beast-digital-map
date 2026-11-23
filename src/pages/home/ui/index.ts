@@ -1,2 +1,6 @@
 export { Credits } from './Credits'
+export { CreditsBox } from './CreditsBox'
+export { CreditsLink } from './CreditsLink'
 export { Home } from './Home'
+export { HomeLayout } from './HomeLayout'
+export { HomeLogo } from './HomeLogo'

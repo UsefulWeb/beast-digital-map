@@ -5,7 +5,7 @@ const downloadWithProgress = async (
   onProgress: (value: number) => void,
   signal?: AbortSignal,
 ) => {
-  const response = await fetch(url, { signal })
+  const response = await fetch(url, signal ? { signal } : undefined)
   if (!response.ok) {
     throw new Error(`Failed to download ${url}: ${response.status}`)
   }

@@ -1,2 +1,3 @@
-export { MapLocation } from './MapLocation'
-export { MapLocationImage } from './MapLocationImage'
+export { Location } from './Location'
+export { LocationImage } from './LocationImage'
+export { LocationWait } from './LocationWait'
