@@ -20,7 +20,7 @@ export const PathLayer = (props: PathLayerProps) => {
 
   return (
     <PathLine
-      d={model.d}
+      strokes={model.strokes}
       width={width}
       height={height}
       ratio={ratio}

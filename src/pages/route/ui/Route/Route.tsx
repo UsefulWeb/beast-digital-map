@@ -9,7 +9,8 @@ import {
   readMapData,
 } from '@entities/map'
 import { startFrom } from '@entities/path'
-import { exitAppFullscreen, requestAppFullscreen } from '@shared/lib'
+import { MAP_DEBUG } from '@shared/config'
+import { useFullscreen } from '@shared/lib'
 import { ErrorFallback, Progress } from '@shared/ui'
 import { Board } from '@widgets/board'
 import { Component, type ReactNode, Suspense, useEffect, useState } from 'react'
@@ -28,12 +29,7 @@ const MapBoard = (props: { mapId: MapId }) => {
     startFrom(startLocation)
   }, [data, props.mapId, setMapId])
 
-  useEffect(() => {
-    void requestAppFullscreen()
-    return () => {
-      void exitAppFullscreen()
-    }
-  }, [])
+  useFullscreen(!MAP_DEBUG)
 
   if (!info) {
     throw new Error(`Unknown map: ${props.mapId}`)

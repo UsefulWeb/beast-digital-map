@@ -1,1 +1,1 @@
-export { ZoomControls } from './ZoomControls/ZoomControls'
+export { ZoomControls } from './ZoomControls'

@@ -1,19 +1,10 @@
-import styled from '@emotion/styled'
 import { BASE_URL } from '@shared/config'
-import { IconButton, Stack } from '@shared/ui'
+import { IconButton } from '@shared/ui'
 import { useEffect, useRef } from 'react'
 import { useControls, useTransformEffect } from 'react-zoom-pan-pinch'
 import { canZoomIn, canZoomOut } from '../../lib'
 import { selectZoomScale, setZoom, useZoomStore } from '../../model'
-
-const ZoomOutSlot = styled.div`
-  margin-top: -0.7em;
-
-  @media (orientation: portrait) {
-    margin-top: 0;
-    margin-left: -2em;
-  }
-`
+import * as C from './ZoomControls.components'
 
 export const ZoomControls = () => {
   const { zoomIn, zoomOut } = useControls()
@@ -37,7 +28,7 @@ export const ZoomControls = () => {
   )
 
   return (
-    <Stack gap="1em" portrait="row">
+    <C.ZoomRow gap="1em" portrait="row" align="center">
       <IconButton
         onClick={() => zoomIn()}
         icon={`${BASE_URL}images/controls/zoom-in.svg`}
@@ -45,7 +36,7 @@ export const ZoomControls = () => {
         name="Zoom In"
         size="control"
       />
-      <ZoomOutSlot>
+      <C.ZoomOutSlot>
         <IconButton
           onClick={() => zoomOut()}
           icon={`${BASE_URL}images/controls/zoom-out.svg`}
@@ -53,7 +44,7 @@ export const ZoomControls = () => {
           name="Zoom Out"
           size="control"
         />
-      </ZoomOutSlot>
-    </Stack>
+      </C.ZoomOutSlot>
+    </C.ZoomRow>
   )
 }

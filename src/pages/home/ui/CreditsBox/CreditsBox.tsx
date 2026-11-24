@@ -1,19 +1,11 @@
-import styled from '@emotion/styled'
 import type { ReactNode } from 'react'
+import * as C from './CreditsBox.components'
 
 export type CreditsBoxProps = {
   children: ReactNode
 }
 
-const Box = styled.div`
-  font-size: 12px;
-  background: #ffffff60;
-  padding: 10px;
-  border-radius: 4px;
-  color: #000000;
-`
-
 export const CreditsBox = (props: CreditsBoxProps) => {
   const { children } = props
-  return <Box>{children}</Box>
+  return <C.Box>{children}</C.Box>
 }

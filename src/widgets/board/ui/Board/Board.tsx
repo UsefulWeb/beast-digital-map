@@ -1,13 +1,14 @@
 import { ClassNames } from '@emotion/react'
 import { BoardRoot } from '@entities/board'
-import { GameMode, selectMode, useGameStore } from '@entities/game'
+import { GameMode, ModeSwitch, selectMode, useGameStore } from '@entities/game'
 import type { MapData } from '@entities/map'
+import { HelpControl } from '@features/help'
 import { useKeyboardControls } from '@features/keyboard-controls'
 import { useImageSize } from '@shared/lib'
 import { Toolbar } from '@widgets/toolbar'
 import { useCallback, useRef, useState } from 'react'
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
-import { BoardMap } from './BoardMap'
+import { BoardMap } from '../BoardMap'
 
 export type BoardProps = {
   data: MapData
@@ -32,6 +33,8 @@ const BoardContent = (props: {
   return (
     <>
       <Toolbar />
+      <ModeSwitch />
+      <HelpControl />
       <ClassNames>
         {({ css }) => (
           <TransformComponent
