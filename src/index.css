@@ -1,16 +1,18 @@
 @font-face {
-  font-family: 'Optimus Princeps';
-  src: url('/fonts/optimusprinceps.woff2') format('woff2'),
-  url('/fonts/optimusprinceps.woff') format('woff');
+  font-family: "Optimus Princeps";
+  src:
+    url("../public/fonts/optimusprinceps.woff2") format("woff2"),
+    url("../public/fonts/optimusprinceps.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Optimus Princeps';
-  src: url('/fonts/optimusprincepssemibold.woff2') format('woff2'),
-  url('/fonts/optimusprincepssemibold.woff') format('woff');
+  font-family: "Optimus Princeps";
+  src:
+    url("../public/fonts/optimusprincepssemibold.woff2") format("woff2"),
+    url("../public/fonts/optimusprincepssemibold.woff") format("woff");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -27,11 +29,10 @@ a {
 
 .page {
   margin: 0;
-  font-family: 'Optimus Princeps', sans-serif;
+  font-family: "Optimus Princeps", sans-serif;
   background: #070a0c;
   background-size: cover;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   height: 100%;
 }
-

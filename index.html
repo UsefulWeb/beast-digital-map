@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Beast Digital Map">
 
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
     <meta name="apple-mobile-web-app-title" content="Beast">
@@ -13,29 +14,27 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <!-- favicons  -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+    <!-- favicons — %BASE_URL% so deep routes (/map/…) don’t resolve relative to /map/ -->
+    <link rel="apple-touch-icon" sizes="180x180" href="%BASE_URL%apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="%BASE_URL%favicon-16x16.png">
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest">
+    <link rel="mask-icon" href="%BASE_URL%safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#000000">
 
-    <link rel="preload" href="/fonts/optimusprinceps.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/optimusprincepssemibold.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" as="image" href="images/background.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/ui/page-background.jpg">
 
-    <link rel="preload" as="image" href="images/movement/back.jpg">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/back.jpg">
 
-    <link rel="preload" as="image" href="images/movement/prev.png">
-    <link rel="preload" as="image" href="images/movement/next.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/prev.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/next.png">
 
-    <link rel="preload" as="image" href="images/movement/east.png">
-    <link rel="preload" as="image" href="images/movement/west.png">
-    <link rel="preload" as="image" href="images/movement/north.png">
-    <link rel="preload" as="image" href="images/movement/south.png">
-    <link rel="preload" as="image" href="images/movement/no-movement.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/east.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/west.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/north.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/south.png">
+    <link rel="preload" as="image" href="%BASE_URL%images/movement/no-movement.png">
 
     <title>Beast Digital Map</title>
   </head>
