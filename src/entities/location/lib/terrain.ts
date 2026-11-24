@@ -1,7 +1,7 @@
 import type { LocationItem } from '../model/types'
 import { Terrain } from '../model/types'
 
-export const USER_TERRAINS = [
+export const USER_TERRAINS: Terrain[] = [
   Terrain.SWAMP,
   Terrain.CAVES,
   Terrain.FOREST,

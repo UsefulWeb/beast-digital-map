@@ -1,9 +1,20 @@
 import type { LocationItem, Terrain } from '@entities/location'
 
-export enum MapId {
-  DRENCHED_LANDS = 'drenched-lands',
-  NORTHERN_EXPANSE = 'northern-expanse',
-}
+export const MapFamily = {
+  BEAST: 'beast',
+  SHATTERED_ISLES: 'shattered-isles',
+} as const
+
+export type MapFamily = (typeof MapFamily)[keyof typeof MapFamily]
+
+export const MapId = {
+  DRENCHED_LANDS: 'drenched-lands',
+  NORTHERN_EXPANSE: 'northern-expanse',
+  UPPER_SHATTERED_ISLES: 'upper-shattered-isles',
+  LOWER_SHATTERED_ISLES: 'lower-shattered-isles',
+} as const
+
+export type MapId = (typeof MapId)[keyof typeof MapId]
 
 export type MapSize = {
   width: number
@@ -41,7 +52,15 @@ export type MapJson = [MapJsonSettings, MapJsonItem[]]
 
 export type MapInfo = {
   id: MapId
+  family: MapFamily
   title: string
+  /** Optional multi-line label for home buttons */
+  label: string[]
   image: string
   data: string
+}
+
+export type MapFamilyInfo = {
+  id: MapFamily
+  title: string
 }

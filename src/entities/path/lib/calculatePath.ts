@@ -154,16 +154,19 @@ const getCircleOffset = (from: IPoint, to: IPoint, radius: number): IPoint => {
   return [x * radius, y * radius]
 }
 
-export enum PathRenderItemType {
-  LINE_TO = 'lineTo',
-  MOVE_TO = 'moveTo',
-  QUADRATIC_CURVE_TO = 'quadraticCurveTo',
-  ARC = 'arc',
-  BEGIN_PATH = 'beginPath',
-  CLOSE_PATH = 'closePath',
-  FILL = 'fill',
-  STROKE = 'stroke',
-}
+export const PathRenderItemType = {
+  LINE_TO: 'lineTo',
+  MOVE_TO: 'moveTo',
+  QUADRATIC_CURVE_TO: 'quadraticCurveTo',
+  ARC: 'arc',
+  BEGIN_PATH: 'beginPath',
+  CLOSE_PATH: 'closePath',
+  FILL: 'fill',
+  STROKE: 'stroke',
+} as const
+
+export type PathRenderItemType =
+  (typeof PathRenderItemType)[keyof typeof PathRenderItemType]
 
 export interface PathRenderItem {
   type: PathRenderItemType

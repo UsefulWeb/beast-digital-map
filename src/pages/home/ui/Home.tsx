@@ -1,6 +1,12 @@
-import { MAP_CATALOG, type MapId } from '@entities/map'
+import {
+  getMapsByFamily,
+  MAP_FAMILIES,
+  MapFamily,
+  type MapFamily as MapFamilyId,
+} from '@entities/map'
 import { BASE_URL } from '@shared/config'
 import { Button, Stack } from '@shared/ui'
+import { useState } from 'react'
 import { useLocation } from 'wouter'
 import { Credits } from './Credits'
 import { HomeLayout } from './HomeLayout'
@@ -10,31 +16,50 @@ const logo = `${BASE_URL}images/ui/logo.png`
 
 export const Home = () => {
   const [, setLocation] = useLocation()
+  const [family, setFamily] = useState<MapFamilyId | null>(null)
+
+  const maps = family ? getMapsByFamily(family) : []
 
   return (
     <HomeLayout>
       <HomeLogo src={logo} alt="Beast logo" />
       <Stack align="center" gap={10}>
-        {MAP_CATALOG.map((item) => (
-          <Button
-            key={item.id}
-            variant="fixed"
-            onClick={() => setLocation(`/map/${item.id as MapId}`)}
-          >
-            {item.title.includes('Northern') ? (
-              <>
-                the Northern
+        {family === null ? (
+          MAP_FAMILIES.map((item) => (
+            <Button
+              key={item.id}
+              variant="fixed"
+              onClick={() => setFamily(item.id)}
+            >
+              {item.id === MapFamily.SHATTERED_ISLES ? (
+                <>
+                  Shattered
+                  <br />
+                  Isles
+                </>
+              ) : (
+                item.title
+              )}
+            </Button>
+          ))
+        ) : (
+          <>
+            {maps.map((item) => (
+              <Button
+                key={item.id}
+                variant="fixed"
+                onClick={() => setLocation(`/map/${item.id}`)}
+              >
+                {item.label[0]}
                 <br />
-                Expanse
-              </>
-            ) : (
-              <>
-                the <br />
-                Drenched Lands
-              </>
-            )}
-          </Button>
-        ))}
+                {item.label[1]}
+              </Button>
+            ))}
+            <Button variant="fixed" onClick={() => setFamily(null)}>
+              Back
+            </Button>
+          </>
+        )}
       </Stack>
       <Credits />
     </HomeLayout>
