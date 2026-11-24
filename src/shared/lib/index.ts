@@ -1,6 +1,7 @@
 export * from './debounce'
 export * from './fullscreen'
 export * from './hooks'
+export * from './isMobile'
 export * from './isPwa'
 export * from './loadAssets'
 export * from './math'
