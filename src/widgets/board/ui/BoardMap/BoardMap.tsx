@@ -1,10 +1,5 @@
 import { BoardFrame, BoardImage } from '@entities/board'
-import {
-  GameMode,
-  selectMode,
-  selectPathLinksLocked,
-  useGameStore,
-} from '@entities/game'
+import { GameMode, selectMode, useGameStore } from '@entities/game'
 import {
   changeLocationType,
   cycleLocationMeeple,
@@ -41,7 +36,6 @@ export type BoardMapProps = {
 export const BoardMap = (props: BoardMapProps) => {
   const { width, height, ratio, src } = props
   const mode = useGameStore(selectMode)
-  const pathLinksLocked = useGameStore(selectPathLinksLocked)
   const locations = useLocationsStore(selectLocations)
   const path = usePathStore(selectPathData)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
@@ -63,10 +57,7 @@ export const BoardMap = (props: BoardMapProps) => {
     if (mode === GameMode.HUNTERS) {
       return
     }
-    if (
-      mode !== GameMode.PATH ||
-      !canClickLocation(path, item, pathLinksLocked)
-    ) {
+    if (mode !== GameMode.PATH || !canClickLocation(path, item)) {
       return
     }
     addPathItem(item)
@@ -94,7 +85,7 @@ export const BoardMap = (props: BoardMapProps) => {
                 {...(MAP_DEBUG ? { onHover: setHoveredIndex, debugLink } : {})}
                 isFirst={isLocationFirst(path, item)}
                 isLast={isLocationLast(path, item)}
-                isNext={pathLinksLocked && isNextLocation(path, item)}
+                isNext={isNextLocation(path, item)}
                 waitList={getLocationWait(path, item)}
                 visitsCount={getLocationVisitsCount(path, item)}
                 type={item.type}

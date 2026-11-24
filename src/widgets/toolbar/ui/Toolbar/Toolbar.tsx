@@ -1,10 +1,4 @@
-import {
-  GameMode,
-  selectMode,
-  selectPathLinksLocked,
-  togglePathLinksLocked,
-  useGameStore,
-} from '@entities/game'
+import { GameMode, selectMode, useGameStore } from '@entities/game'
 import { Redo, Undo } from '@entities/history'
 import {
   canClearPath,
@@ -24,7 +18,6 @@ import * as C from './Toolbar.components'
 
 export const Toolbar = () => {
   const gameMode = useGameStore(selectMode)
-  const pathLinksLocked = useGameStore(selectPathLinksLocked)
   const path = usePathStore(selectPathData)
   const [, setLocation] = useLocation()
 
@@ -52,22 +45,6 @@ export const Toolbar = () => {
         >
           {isPathMode && (
             <>
-              <HelpTip label={pathLinksLocked ? 'Links only' : 'Free travel'}>
-                <C.LockSlot $open={!pathLinksLocked}>
-                  <IconButton
-                    onClick={() => togglePathLinksLocked()}
-                    icon={`${BASE_URL}images/controls/${
-                      pathLinksLocked ? 'lock-closed' : 'lock-open'
-                    }.svg`}
-                    name={
-                      pathLinksLocked
-                        ? 'Unlock path links — free travel'
-                        : 'Lock path links — neighbors only'
-                    }
-                    size="control"
-                  />
-                </C.LockSlot>
-              </HelpTip>
               <HelpTip label="Clear">
                 <C.ClearSlot>
                   <IconButton

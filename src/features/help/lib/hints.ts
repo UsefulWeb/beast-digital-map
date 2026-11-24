@@ -20,7 +20,7 @@ const MODE_TITLES: Partial<Record<GameMode, string>> = {
 const MODES_OVERVIEW: HelpHint[] = [
   {
     label: 'Path',
-    text: 'Build the beast path: tap locations, waits, undo/redo, lock links.',
+    text: 'Build the beast path: tap locations, waits, undo/redo.',
   },
   {
     label: 'Locations',
@@ -34,10 +34,6 @@ const MODES_OVERVIEW: HelpHint[] = [
 
 const MODE_BUTTONS: Partial<Record<GameMode, HelpHint[]>> = {
   [GameMode.PATH]: [
-    {
-      label: 'Links lock',
-      text: 'On: only linked neighbors. Off: free travel to any location.',
-    },
     {
       label: 'Clear path',
       text: 'Reset the path back to the starting location.',
