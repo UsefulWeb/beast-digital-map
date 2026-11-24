@@ -1,3 +1,4 @@
+export * from './debounce'
 export * from './fullscreen'
 export * from './hooks'
 export * from './isPwa'
