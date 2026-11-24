@@ -1,6 +1,6 @@
-import styled from '@emotion/styled'
 import { BASE_URL } from '@shared/config'
-import type { PathMarker } from '../../lib'
+import type { PathMarker, PathStrokePiece } from '../../lib'
+import * as C from './PathLine.components'
 
 const arrowImg = `${BASE_URL}images/path/arrow.svg`
 
@@ -15,40 +15,58 @@ const BASE_MARKER_FONT = 23
 const LABEL_LOCAL_Y = -0.17
 
 export type PathLineProps = {
-  d: string
+  strokes: PathStrokePiece[]
   width: number
   height: number
   ratio: number
   markers: PathMarker[]
 }
 
-const Root = styled.svg`
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-`
-
-const Line = styled.path<{ $strokeWidth: number }>`
-  fill: none;
-  stroke: var(--color-path);
-  stroke-width: ${({ $strokeWidth }) => $strokeWidth};
-  stroke-linecap: round;
-  stroke-linejoin: round;
-`
-
 export const PathLine = (props: PathLineProps) => {
-  const { d, width, height, ratio, markers } = props
+  const { strokes, width, height, ratio, markers } = props
 
   const strokeWidth = Math.max(1.5, BASE_STROKE_WIDTH * ratio)
+  const underlayWidth = strokeWidth + Math.max(1, strokeWidth * 0.18)
   const markerSize = Math.max(8, BASE_MARKER_SIZE * ratio)
   const markerHalf = markerSize / 2
-  const markerFont = Math.max(9, BASE_MARKER_FONT * ratio)
+  const markerFont = Math.max(6.5, BASE_MARKER_FONT * ratio)
   const labelLocalY = markerSize * LABEL_LOCAL_Y
 
   return (
-    <Root width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-      {d && <Line d={d} $strokeWidth={strokeWidth} />}
+    <C.Root width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <defs>
+        {strokes.map((stroke) => (
+          <linearGradient
+            key={`grad-${stroke.key}`}
+            id={`path-grad-${stroke.key}`}
+            gradientUnits="userSpaceOnUse"
+            x1={stroke.x1}
+            y1={stroke.y1}
+            x2={stroke.x2}
+            y2={stroke.y2}
+          >
+            <stop offset="0%" stopColor={stroke.colorFrom} />
+            <stop offset="100%" stopColor={stroke.colorTo} />
+          </linearGradient>
+        ))}
+      </defs>
+      {/* Opaque underlay — keeps the ribbon readable above map-art / location glow */}
+      {strokes.map((stroke) => (
+        <C.Line
+          key={`under-${stroke.key}`}
+          d={stroke.d}
+          $strokeWidth={underlayWidth}
+          stroke="rgb(0 0 0 / 80%)"
+        />
+      ))}
+      {strokes.map((stroke) => (
+        <C.Line
+          key={stroke.key}
+          d={stroke.d}
+          $strokeWidth={strokeWidth}
+          stroke={`url(#path-grad-${stroke.key})`}
+        />
+      ))}
       {markers.map((marker) => (
         <g
           key={marker.key}
@@ -66,7 +84,6 @@ export const PathLine = (props: PathLineProps) => {
                 : 'drop-shadow(0 0 2px black)',
             }}
           />
-          {/* Counter-rotate so the digit stays upright but glued to triangle center. */}
           <g
             transform={`translate(0, ${labelLocalY}) rotate(${-marker.angle})`}
           >
@@ -86,6 +103,6 @@ export const PathLine = (props: PathLineProps) => {
           </g>
         </g>
       ))}
-    </Root>
+    </C.Root>
   )
 }

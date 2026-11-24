@@ -154,38 +154,73 @@ export const isNextLocation = (path: Path, item: LocationItem) => {
 export const startFromLocation = (location: LocationItem | null): Path =>
   location ? [location] : []
 
+export type DirectedLinks = {
+  top?: LocationItem
+  left?: LocationItem
+  right?: LocationItem
+  bottom?: LocationItem
+}
+
+type Cardinal = keyof DirectedLinks
+
+/** Screen coords: +left = right, +top = down. Angle 0 = up, +90° = right. */
+const cardinalFromDelta = (dx: number, dy: number): Cardinal => {
+  const deg = (Math.atan2(dx, -dy) * 180) / Math.PI
+  if (deg >= -45 && deg < 45) {
+    return 'top'
+  }
+  if (deg >= 45 && deg < 135) {
+    return 'right'
+  }
+  if (deg >= -135 && deg < -45) {
+    return 'left'
+  }
+  return 'bottom'
+}
+
+/**
+ * Map each linked neighbor to the nearest cardinal by angle; if several share
+ * a cardinal, keep the nearest by distance (fixes SI long-bridge links).
+ */
 export const getLocationDirectedLinks = (
   locations: LocationItem[],
   item: LocationItem,
-) => {
+): DirectedLinks => {
   const { links = [] } = item
+  const best: Partial<
+    Record<Cardinal, { location: LocationItem; dist: number }>
+  > = {}
 
-  const data = links.map((index) => locations[index])
-
-  const leftOrder = [...data].sort((a, b) =>
-    a.left > b.left ? 1 : a.left === b.left ? 0 : -1,
-  )
-  const topOrder = [...data].sort((a, b) =>
-    a.top > b.top ? 1 : a.top === b.top ? 0 : -1,
-  )
-  const ACCURACY = 50
-
-  const left = leftOrder.filter(
-    (location) => item.left - location.left > ACCURACY,
-  )[0]
-  const right = leftOrder
-    .filter((location) => location.left - item.left > ACCURACY)
-    .reverse()[0]
-  const top = topOrder.filter(
-    (location) => item.top - location.top > ACCURACY,
-  )[0]
-  const bottom = topOrder
-    .filter((location) => location.top - item.top > ACCURACY)
-    .reverse()[0]
-  return {
-    top,
-    left,
-    right,
-    bottom,
+  for (const index of links) {
+    const location = locations[index]
+    if (!location) {
+      continue
+    }
+    const dx = location.left - item.left
+    const dy = location.top - item.top
+    const dist = Math.hypot(dx, dy)
+    if (dist === 0) {
+      continue
+    }
+    const cardinal = cardinalFromDelta(dx, dy)
+    const current = best[cardinal]
+    if (!current || dist < current.dist) {
+      best[cardinal] = { location, dist }
+    }
   }
+
+  const result: DirectedLinks = {}
+  if (best.top) {
+    result.top = best.top.location
+  }
+  if (best.left) {
+    result.left = best.left.location
+  }
+  if (best.right) {
+    result.right = best.right.location
+  }
+  if (best.bottom) {
+    result.bottom = best.bottom.location
+  }
+  return result
 }

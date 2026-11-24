@@ -1,3 +1,5 @@
+import { palette } from '@shared/styles'
+import Color from 'color'
 import type { PathSegment, PathSegments } from '../model/types'
 import {
   getControlPoint,
@@ -9,6 +11,9 @@ import {
 
 /** Arrow asset points down; SVG rotate(0) keeps that orientation. */
 const ARROW_ASSET_OFFSET_DEG = -90
+
+/** Samples per cubic when measuring length / building gradient pieces. */
+const CUBIC_SAMPLES = 12
 
 const scalePoint =
   (ratio: number) =>
@@ -23,76 +28,209 @@ export type PathMarker = {
   isLast: boolean
 }
 
-export type PathLineModel = {
+/** One short stroke with a linearGradient aligned to its local direction. */
+export type PathStrokePiece = {
+  key: string
   d: string
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  colorFrom: string
+  colorTo: string
+}
+
+export type PathLineModel = {
+  strokes: PathStrokePiece[]
   markers: PathMarker[]
-}
-
-const segmentPoints = (segment: PathSegment, ratio: number) => {
-  const from = scalePoint(ratio)(getLocationCenter(segment.source.location))
-  const to = scalePoint(ratio)(getLocationCenter(segment.target.location))
-  const control = scalePoint(ratio)(
-    getControlPoint({
-      source: segment.source,
-      target: segment.target,
-      visitIndex: segment.mutualVisitIndex,
-    }),
-  )
-  return { from, to, control }
-}
-
-/** Point on quadratic Bézier at parameter t ∈ [0, 1]. */
-const quadraticAt = (
-  from: IPoint,
-  control: IPoint,
-  to: IPoint,
-  t: number,
-): IPoint => {
-  const u = 1 - t
-  return [
-    u * u * from[0] + 2 * u * t * control[0] + t * t * to[0],
-    u * u * from[1] + 2 * u * t * control[1] + t * t * to[1],
-  ]
-}
-
-/** Tangent of quadratic Bézier at t (not normalized). */
-const quadraticTangentAt = (
-  from: IPoint,
-  control: IPoint,
-  to: IPoint,
-  t: number,
-): IPoint => {
-  const u = 1 - t
-  return [
-    2 * u * (control[0] - from[0]) + 2 * t * (to[0] - control[0]),
-    2 * u * (control[1] - from[1]) + 2 * t * (to[1] - control[1]),
-  ]
 }
 
 const markerAngle = (tangentFrom: IPoint, tangentTo: IPoint) =>
   ARROW_ASSET_OFFSET_DEG + rad2deg(getSkew(tangentFrom, tangentTo))
+
+const cubicAt = (
+  p0: IPoint,
+  p1: IPoint,
+  p2: IPoint,
+  p3: IPoint,
+  t: number,
+): IPoint => {
+  const u = 1 - t
+  const tt = t * t
+  const uu = u * u
+  return [
+    uu * u * p0[0] + 3 * uu * t * p1[0] + 3 * u * tt * p2[0] + tt * t * p3[0],
+    uu * u * p0[1] + 3 * uu * t * p1[1] + 3 * u * tt * p2[1] + tt * t * p3[1],
+  ]
+}
+
+const cubicTangentAt = (
+  p0: IPoint,
+  p1: IPoint,
+  p2: IPoint,
+  p3: IPoint,
+  t: number,
+): IPoint => {
+  const u = 1 - t
+  return [
+    3 * u * u * (p1[0] - p0[0]) +
+      6 * u * t * (p2[0] - p1[0]) +
+      3 * t * t * (p3[0] - p2[0]),
+    3 * u * u * (p1[1] - p0[1]) +
+      6 * u * t * (p2[1] - p1[1]) +
+      3 * t * t * (p3[1] - p2[1]),
+  ]
+}
+
+type Cubic = { p0: IPoint; p1: IPoint; p2: IPoint; p3: IPoint }
+
+const catmullRomCubics = (points: IPoint[]): Cubic[] => {
+  if (points.length < 2) {
+    return []
+  }
+  if (points.length === 2) {
+    const [a, b] = points
+    return [{ p0: a, p1: a, p2: b, p3: b }]
+  }
+
+  const pts: IPoint[] = [points[0], ...points, points[points.length - 1]]
+  const cubics: Cubic[] = []
+
+  for (let i = 1; i < pts.length - 2; i++) {
+    const p0 = pts[i - 1]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[i + 2]
+    cubics.push({
+      p0: p1,
+      p1: [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6],
+      p2: [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6],
+      p3: p2,
+    })
+  }
+
+  return cubics
+}
+
+const buildWaypoints = (segments: PathSegments, ratio: number): IPoint[] => {
+  const scale = scalePoint(ratio)
+  const points: IPoint[] = []
+
+  segments.forEach((segment, index) => {
+    if (index === 0) {
+      points.push(scale(getLocationCenter(segment.source.location)))
+    }
+
+    if (segment.mutualVisitIndex > 0) {
+      points.push(
+        scale(
+          getControlPoint({
+            source: segment.source,
+            target: segment.target,
+            visitIndex: segment.mutualVisitIndex,
+          }),
+        ),
+      )
+    }
+
+    points.push(scale(getLocationCenter(segment.target.location)))
+  })
+
+  return points
+}
+
+const dist = (a: IPoint, b: IPoint) => Math.hypot(b[0] - a[0], b[1] - a[1])
+
+const cubicLength = (cubic: Cubic, samples = CUBIC_SAMPLES) => {
+  let length = 0
+  let prev = cubicAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, 0)
+  for (let i = 1; i <= samples; i++) {
+    const point = cubicAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, i / samples)
+    length += dist(prev, point)
+    prev = point
+  }
+  return length
+}
+
+/** Arc-length color: start → ochre mid → end. */
+const colorAt = (t: number) => {
+  const start = Color(palette.markerStart)
+  const mid = Color(palette.path)
+  const end = Color(palette.markerEnd)
+  if (t <= 0.5) {
+    return start.mix(mid, t / 0.5).hex()
+  }
+  return mid.mix(end, (t - 0.5) / 0.5).hex()
+}
+
+const buildGradientStrokes = (cubics: Cubic[]): PathStrokePiece[] => {
+  const lengths = cubics.map((cubic) => cubicLength(cubic))
+  const total = lengths.reduce((sum, value) => sum + value, 0) || 1
+  const strokes: PathStrokePiece[] = []
+  let traveled = 0
+
+  cubics.forEach((cubic, cubicIndex) => {
+    const length = lengths[cubicIndex]
+    let prev = cubicAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, 0)
+    let prevT = traveled / total
+
+    for (let i = 1; i <= CUBIC_SAMPLES; i++) {
+      const t = i / CUBIC_SAMPLES
+      const point = cubicAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, t)
+      const segmentLength = dist(prev, point)
+      if (segmentLength < 0.25) {
+        prev = point
+        continue
+      }
+
+      const nextTraveled = traveled + segmentLength
+      const nextT = nextTraveled / total
+
+      strokes.push({
+        key: `stroke-${cubicIndex}-${i}`,
+        d: `M ${prev[0]} ${prev[1]} L ${point[0]} ${point[1]}`,
+        x1: prev[0],
+        y1: prev[1],
+        x2: point[0],
+        y2: point[1],
+        colorFrom: colorAt(prevT),
+        colorTo: colorAt(nextT),
+      })
+
+      traveled = nextTraveled
+      prevT = nextT
+      prev = point
+    }
+  })
+
+  return strokes
+}
 
 export const buildPathLineModel = (
   segments: PathSegments,
   ratio: number,
 ): PathLineModel => {
   if (segments.length === 0) {
-    return { d: '', markers: [] }
+    return { strokes: [], markers: [] }
   }
 
-  const parts: string[] = []
+  const waypoints = buildWaypoints(segments, ratio)
+  const cubics = catmullRomCubics(waypoints)
+  const strokes = buildGradientStrokes(cubics)
+
   const markers: PathMarker[] = []
+  let nextWaypointIndex = 1
 
   segments.forEach((segment, index) => {
-    const { from, to, control } = segmentPoints(segment, ratio)
-    if (index === 0) {
-      parts.push(`M ${from[0]} ${from[1]}`)
+    if (segment.mutualVisitIndex > 0) {
+      nextWaypointIndex += 1
     }
-    parts.push(`Q ${control[0]} ${control[1]} ${to[0]} ${to[1]}`)
+    const cubic =
+      cubics[Math.min(nextWaypointIndex - 1, cubics.length - 1)] ?? cubics[0]
+    nextWaypointIndex += 1
 
-    // Midpoint of the drawn curve (not the off-curve control point).
-    const mid = quadraticAt(from, control, to, 0.5)
-    const tangent = quadraticTangentAt(from, control, to, 0.5)
+    const mid = cubicAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, 0.5)
+    const tangent = cubicTangentAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, 0.5)
     const tangentEnd: IPoint = [mid[0] + tangent[0], mid[1] + tangent[1]]
 
     markers.push({
@@ -105,8 +243,5 @@ export const buildPathLineModel = (
     })
   })
 
-  return {
-    d: parts.join(' '),
-    markers,
-  }
+  return { strokes, markers }
 }
