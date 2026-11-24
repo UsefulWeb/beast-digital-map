@@ -7,7 +7,7 @@ import {
 } from '../model/types'
 
 export const MAP_FAMILIES: MapFamilyInfo[] = [
-  { id: MapFamily.BEAST, title: 'Beast' },
+  { id: MapFamily.BEAST, title: 'Base Maps' },
   { id: MapFamily.SHATTERED_ISLES, title: 'Shattered Isles' },
 ]
 

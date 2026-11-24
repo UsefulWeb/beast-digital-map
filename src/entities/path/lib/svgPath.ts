@@ -1,6 +1,6 @@
 import { palette } from '@shared/styles'
 import Color from 'color'
-import type { PathSegment, PathSegments } from '../model/types'
+import type { PathSegments } from '../model/types'
 import {
   getControlPoint,
   getLocationCenter,
@@ -170,7 +170,6 @@ const buildGradientStrokes = (cubics: Cubic[]): PathStrokePiece[] => {
   let traveled = 0
 
   cubics.forEach((cubic, cubicIndex) => {
-    const length = lengths[cubicIndex]
     let prev = cubicAt(cubic.p0, cubic.p1, cubic.p2, cubic.p3, 0)
     let prevT = traveled / total
 

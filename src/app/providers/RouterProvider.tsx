@@ -1,10 +1,12 @@
 import { Home, Route } from '@pages/index'
+import { BASE_URL } from '@shared/config'
 import { Router, Switch, Route as WouterRoute } from 'wouter'
-import { useHashLocation } from 'wouter/use-hash-location'
 import { AppShell } from '../ui'
 
+const base = BASE_URL.replace(/\/$/, '')
+
 export const RouterProvider = () => (
-  <Router hook={useHashLocation}>
+  <Router base={base}>
     <AppShell>
       <Switch>
         <WouterRoute path="/" component={Home} />
