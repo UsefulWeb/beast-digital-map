@@ -1,0 +1,1 @@
+export { MeepleWounds } from './MeepleWounds'

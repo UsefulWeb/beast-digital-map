@@ -1,14 +1,16 @@
-import { css } from '@emotion/react'
-import styled from '@emotion/styled'
 import { GameMode } from '@entities/game/model'
-import { BASE_URL } from '@shared/config'
+import { MAP_DEBUG } from '@shared/config'
 import { px, scale } from '@shared/lib/math'
-import { Terrain } from '../../model'
+import { type MapMeeple, MapMeepleType, type Terrain } from '../../model'
 import { LocationImage } from '../LocationImage'
 import { LocationWait } from '../LocationWait'
+import { Meeple } from '../Meeple'
+import * as C from './Location.components'
 
 export type LocationProps = {
   onClick: () => void
+  onMeepleInjure?: () => void
+  onHover?: ((index: number | null) => void) | undefined
   visitsCount: number
   waitList: number[]
   isFirst: boolean
@@ -21,179 +23,11 @@ export type LocationProps = {
   type: Terrain
   gameMode: GameMode
   isDefaultType: boolean
+  index: number
+  meeple: MapMeeple
+  /** debug: hovered node or one of its links */
+  debugLink?: 'active' | 'linked' | undefined
 }
-
-const Root = styled.div`
-  position: absolute;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const WaitLayer = styled(Root)`
-  z-index: 7;
-`
-
-const MainLayer = styled(Root)`
-  z-index: 5;
-`
-
-const TypeLayer = styled(Root)`
-  z-index: 1;
-`
-
-const HitArea = styled.div`
-  position: absolute;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  border-radius: 50%;
-  cursor: pointer;
-
-  &:hover:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 15%;
-    height: 15%;
-    border-radius: 50%;
-    box-shadow:
-      0 0 10px var(--color-hover),
-      inset 0 0 10px var(--color-hover),
-      0 0 30px var(--color-marker-start);
-    background: radial-gradient(
-      var(--color-hover),
-      color-mix(in srgb, var(--color-hover) 80%, var(--color-marker-start)),
-      color-mix(in srgb, var(--color-marker-start) 63%, transparent)
-    );
-  }
-`
-
-const terrainStyles: Partial<Record<Terrain, ReturnType<typeof css>>> = {
-  [Terrain.FOREST]: css`
-    background: #08960020;
-  `,
-  [Terrain.CAVES]: css`
-    background: #80808040;
-  `,
-  [Terrain.SWAMP]: css`
-    background-color: #75007120;
-  `,
-}
-
-const Background = styled.div<{
-  $terrain?: Terrain
-  $modified?: boolean
-  $selected?: boolean
-  $first?: boolean
-  $last?: boolean
-  $next?: boolean
-  $pathMode?: boolean
-  $locationsMode?: boolean
-}>`
-  position: absolute;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  border-radius: 50%;
-
-  ${({ $locationsMode, $terrain }) =>
-    $locationsMode && $terrain ? terrainStyles[$terrain] : undefined}
-
-  ${({ $locationsMode, $modified }) =>
-    $locationsMode &&
-    $modified &&
-    css`
-      box-shadow: 0 0 10px var(--color-marker-start);
-    `}
-
-  ${({ $pathMode, $selected }) =>
-    $pathMode &&
-    $selected &&
-    css`
-      background: var(--color-marker-visited-fill);
-      box-shadow: 0 0 30px var(--color-marker-visited);
-    `}
-
-  ${({ $pathMode, $first }) =>
-    $pathMode &&
-    $first &&
-    css`
-      background: var(--color-marker-start-fill);
-      box-shadow: 0 0 30px var(--color-marker-start);
-    `}
-
-  ${({ $pathMode, $last }) =>
-    $pathMode &&
-    $last &&
-    css`
-      background: var(--color-marker-end-fill);
-      box-shadow: 0 0 30px var(--color-marker-end);
-
-      &:before {
-        content: '';
-        position: absolute;
-        display: block;
-        background: url(${BASE_URL}images/ui/visit-marker.svg) center center
-          no-repeat;
-        background-size: 70%;
-        width: 100%;
-        height: 100%;
-        opacity: 0.92;
-        top: 0;
-        left: 0;
-        z-index: 1;
-      }
-    `}
-
-  ${({ $locationsMode, $last }) =>
-    $locationsMode &&
-    $last &&
-    css`
-      border-radius: 50%;
-      outline-offset: 0.5vw;
-      outline: 0.5vw solid var(--color-marker-end);
-    `}
-
-  ${({ $next }) =>
-    $next &&
-    css`
-      &:before {
-        content: '';
-        position: absolute;
-        display: block;
-        background: url(${BASE_URL}images/ui/location-next.svg) center center
-          no-repeat;
-        background-size: 100%;
-        width: 180%;
-        height: 180%;
-        opacity: 0.92;
-        top: -40%;
-        left: -40%;
-        z-index: 1;
-        filter: drop-shadow(0 0 0.35vw rgba(0, 0, 0, 0.75))
-          drop-shadow(0 0 0.9vw rgba(0, 0, 0, 0.45));
-      }
-    `}
-`
-
-const Counter = styled.span`
-  position: relative;
-  z-index: 2;
-  text-shadow:
-    0 0 10px #fff,
-    1px 1px 0 black,
-    -1px -1px 0 var(--color-hover);
-  color: #fff;
-`
 
 export const Location = (props: LocationProps) => {
   const {
@@ -202,6 +36,8 @@ export const Location = (props: LocationProps) => {
     isNext,
     visitsCount,
     onClick,
+    onMeepleInjure,
+    onHover,
     ratio,
     size,
     top,
@@ -210,11 +46,15 @@ export const Location = (props: LocationProps) => {
     gameMode,
     type,
     isDefaultType,
+    index,
+    meeple,
+    debugLink,
   } = props
 
   const isSelected = visitsCount > 0
   const isPathMode = gameMode === GameMode.PATH
   const isLocationsMode = gameMode === GameMode.LOCATIONS
+  const isMeepleMode = gameMode === GameMode.MEEPLE
   const k = (x: number) => px(scale(x, ratio))
   const style = {
     fontSize: k(size),
@@ -226,15 +66,22 @@ export const Location = (props: LocationProps) => {
 
   const showFirst = isPathMode && isFirst && !isLast
   const showSelected = isPathMode && isSelected && !isFirst && !isLast
+  const showMeeple = isMeepleMode && meeple.type !== MapMeepleType.NO_MEEPLE
 
   return (
     <>
-      <WaitLayer style={style}>
-        <HitArea onClick={onClick} />
+      <C.WaitLayer style={style}>
+        <C.HitArea
+          onClick={onClick}
+          onMouseEnter={() => onHover?.(index)}
+          onMouseLeave={() => onHover?.(null)}
+        />
         {waitList.length > 0 && <LocationWait waitList={waitList} />}
-      </WaitLayer>
-      <MainLayer style={style}>
-        <Background
+      </C.WaitLayer>
+      <C.MainLayer style={style}>
+        <C.Background
+          $debug={MAP_DEBUG}
+          $debugLink={debugLink}
           $terrain={type}
           $modified={isLocationsMode && !isDefaultType}
           $selected={showSelected}
@@ -244,13 +91,21 @@ export const Location = (props: LocationProps) => {
           $pathMode={isPathMode}
           $locationsMode={isLocationsMode}
         >
-          {isPathMode && visitsCount > 1 && <Counter>{visitsCount}</Counter>}
-        </Background>
-      </MainLayer>
+          {MAP_DEBUG && <C.DebugIndex>{index}</C.DebugIndex>}
+          {isPathMode && visitsCount > 1 && (
+            <C.Counter>{visitsCount}</C.Counter>
+          )}
+        </C.Background>
+      </C.MainLayer>
       {!isDefaultType && (
-        <TypeLayer style={style}>
+        <C.TypeLayer style={style}>
           <LocationImage type={type} ratio={ratio} locationSize={size} />
-        </TypeLayer>
+        </C.TypeLayer>
+      )}
+      {showMeeple && onMeepleInjure && (
+        <C.MeepleLayer style={style}>
+          <Meeple meeple={meeple} onInjure={onMeepleInjure} />
+        </C.MeepleLayer>
       )}
     </>
   )

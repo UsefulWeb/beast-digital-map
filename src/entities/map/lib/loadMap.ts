@@ -1,4 +1,4 @@
-import type { LocationItem } from '../../location'
+import { type LocationItem, MapMeepleType, toMeeple } from '../../location'
 import type { MapData, MapId, MapJson, MapJsonItem } from '../model/types'
 import { getMapInfo } from './catalog'
 
@@ -6,7 +6,11 @@ export const parseMapData = (id: MapId, raw: MapJson): MapData => {
   const [width, height, defaultSize, startLocation] = raw[0]
 
   const items: LocationItem[] = raw[1].map((item: MapJsonItem, index) => {
-    const [top, left, links, locationType, size = defaultSize] = item
+    const [top, left, links, locationType, sizeRaw, meepleTypeRaw] = item
+    const size = sizeRaw ?? defaultSize
+    const defaultMeepleType =
+      (meepleTypeRaw as MapMeepleType | undefined) ?? MapMeepleType.NO_MEEPLE
+
     return {
       index,
       defaultType: locationType,
@@ -15,6 +19,8 @@ export const parseMapData = (id: MapId, raw: MapJson): MapData => {
       left,
       size,
       links,
+      defaultMeepleType,
+      meeple: toMeeple(defaultMeepleType),
     }
   })
 

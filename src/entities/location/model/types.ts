@@ -1,3 +1,5 @@
+import type { MapMeeple, MapMeepleType } from './meeple'
+
 export const Terrain = {
   CAVES: 0,
   FOREST: 1,
@@ -16,4 +18,6 @@ export type LocationItem = {
   left: number
   size: number
   links?: number[]
+  defaultMeepleType: MapMeepleType
+  meeple: MapMeeple
 }

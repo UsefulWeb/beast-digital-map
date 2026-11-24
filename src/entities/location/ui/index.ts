@@ -1,3 +1,5 @@
 export { Location } from './Location'
 export { LocationImage } from './LocationImage'
 export { LocationWait } from './LocationWait'
+export { Meeple } from './Meeple'
+export { MeepleWounds } from './MeepleWounds'

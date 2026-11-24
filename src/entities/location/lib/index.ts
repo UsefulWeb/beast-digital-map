@@ -1,3 +1,5 @@
 export * from './images'
+export * from './indicators'
+export * from './meeple'
 export * from './terrain'
 export * from './view'

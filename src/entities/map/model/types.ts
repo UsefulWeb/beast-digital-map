@@ -45,7 +45,8 @@ export type MapJsonItem = [
   left: number,
   links: number[],
   type: Terrain,
-  size: number | undefined,
+  size?: number | null,
+  meepleType?: number,
 ]
 
 export type MapJson = [MapJsonSettings, MapJsonItem[]]
