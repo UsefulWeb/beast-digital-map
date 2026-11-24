@@ -19,6 +19,7 @@ export type FlexProps = {
   portrait?: 'row' | 'column'
   portraitOrder?: number
   portraitJustify?: CSSProperties['justifyContent']
+  portraitGrow?: number
 }
 
 export const Flex = (props: FlexProps) => {
@@ -39,6 +40,7 @@ export const Flex = (props: FlexProps) => {
     portrait,
     portraitOrder,
     portraitJustify,
+    portraitGrow,
     ...rest
   } = props
 
@@ -60,6 +62,7 @@ export const Flex = (props: FlexProps) => {
         $portrait: portrait,
         $portraitOrder: portraitOrder,
         $portraitJustify: portraitJustify,
+        $portraitGrow: portraitGrow,
       })}
       {...rest}
     >

@@ -48,7 +48,8 @@ export const Toolbar = () => {
           grow={1}
           align="center"
           portrait="row"
-          portraitJustify="center"
+          portraitJustify="flex-end"
+          portraitGrow={0}
         >
           {isPathMode && (
             <>

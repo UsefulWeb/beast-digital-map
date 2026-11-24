@@ -16,6 +16,7 @@ export const Root = styled.div<{
   $portrait?: 'row' | 'column'
   $portraitOrder?: number
   $portraitJustify?: CSSProperties['justifyContent']
+  $portraitGrow?: number
 }>`
   display: flex;
   flex-direction: ${({ $direction }) => $direction};
@@ -39,5 +40,7 @@ export const Root = styled.div<{
       $portraitOrder !== undefined ? `order: ${$portraitOrder};` : undefined}
     ${({ $portraitJustify }) =>
       $portraitJustify ? `justify-content: ${$portraitJustify};` : undefined}
+    ${({ $portraitGrow }) =>
+      $portraitGrow !== undefined ? `flex-grow: ${$portraitGrow};` : undefined}
   }
 `
