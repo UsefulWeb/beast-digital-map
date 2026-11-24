@@ -37,7 +37,8 @@ export const Panel = styled(Stack)`
 
   @media (orientation: portrait) {
     font-size: 1.7vw;
-    padding: 1em;
+    /* icons read heavier at the bottom — bias padding upward */
+    padding: 1.7em 1em 1.35em;
     bottom: 0;
     top: auto;
     height: auto;
@@ -53,8 +54,8 @@ export const Panel = styled(Stack)`
     }
 
     @media (min-height: 1024px) {
-      padding: 0.55em 1.5em;
-      font-size: 12px;
+      padding: 1.7em 1.5em 1.35em;
+      font-size: 13px;
       top: 0;
       bottom: auto;
 

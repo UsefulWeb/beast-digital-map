@@ -33,8 +33,8 @@ export const Root = styled.div`
     /* same breakpoint as ToolbarPanel top dock — sit under the bar, top-right */
     @media (min-height: 1024px) {
       font-size: 14px;
-      /* toolbar ~8.1em@12px + border; keep a small gap below */
-      top: calc(110px + env(safe-area-inset-top, 0px));
+      /* toolbar icons + asymmetric pad@13px + border; keep a small gap below */
+      top: calc(146px + env(safe-area-inset-top, 0px));
       right: calc(1em + env(safe-area-inset-right, 0px));
     }
   }
