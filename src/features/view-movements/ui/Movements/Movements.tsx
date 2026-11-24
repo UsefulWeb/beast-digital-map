@@ -7,9 +7,9 @@ import {
 } from '@entities/path'
 import { BASE_URL } from '@shared/config'
 import { useKeyup } from '@shared/lib'
+import { CarouselNav } from '@shared/ui'
 import { useState } from 'react'
-import { CarouselNav } from './CarouselNav'
-import { MovementImage } from './MovementImage'
+import { MovementImage } from '../MovementImage'
 
 const DIRECTION_IMAGES = {
   east: `${BASE_URL}images/movement/east.png`,

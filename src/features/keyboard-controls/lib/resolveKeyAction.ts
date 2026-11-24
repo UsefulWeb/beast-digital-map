@@ -7,6 +7,7 @@ export type KeyAction =
   | { type: 'zoom-in' }
   | { type: 'zoom-out' }
   | { type: 'toggle-mode' }
+  | { type: 'set-mode'; mode: GameMode }
   | { type: 'reset-locations' }
   | { type: 'remove-last' }
   | { type: 'clear-path' }
@@ -18,6 +19,7 @@ export type KeyAction =
 
 export type ResolveKeyContext = {
   key: string
+  code?: string
   ctrlKey: boolean
   metaKey: boolean
   shiftKey: boolean
@@ -31,6 +33,7 @@ export type ResolveKeyContext = {
 export const resolveKeyAction = (ctx: ResolveKeyContext): KeyAction => {
   const {
     key,
+    code,
     ctrlKey,
     metaKey,
     shiftKey,
@@ -41,14 +44,34 @@ export const resolveKeyAction = (ctx: ResolveKeyContext): KeyAction => {
     historyIndex,
   } = ctx
 
-  if (key === '=') {
+  if (
+    key === '=' ||
+    key === '+' ||
+    code === 'NumpadAdd' ||
+    (code === 'Equal' && shiftKey)
+  ) {
     return { type: 'zoom-in' }
   }
-  if (key === '-') {
+  if (
+    key === '-' ||
+    key === '_' ||
+    code === 'NumpadSubtract' ||
+    (code === 'Minus' && shiftKey)
+  ) {
     return { type: 'zoom-out' }
   }
   if (key === 'm' || key === 'M') {
     return { type: 'toggle-mode' }
+  }
+  // Top-row digits only — numpad 1–3 stay free for navigation
+  if (code === 'Digit1' || (key === '1' && code !== 'Numpad1')) {
+    return { type: 'set-mode', mode: GameMode.PATH }
+  }
+  if (code === 'Digit2' || (key === '2' && code !== 'Numpad2')) {
+    return { type: 'set-mode', mode: GameMode.LOCATIONS }
+  }
+  if (code === 'Digit3' || (key === '3' && code !== 'Numpad3')) {
+    return { type: 'set-mode', mode: GameMode.MEEPLE }
   }
 
   if (mode === GameMode.LOCATIONS && key === 'Delete') {
@@ -70,7 +93,8 @@ export const resolveKeyAction = (ctx: ResolveKeyContext): KeyAction => {
     history,
     historyIndex,
   )
-  if ((key === 'z' || key === 'Z') && (ctrlKey || metaKey)) {
+  const isZ = key === 'z' || key === 'Z' || code === 'KeyZ'
+  if (isZ && (ctrlKey || metaKey)) {
     if (shiftKey && !isRedoDisabled) {
       return { type: 'redo' }
     }
@@ -88,16 +112,25 @@ export const resolveKeyAction = (ctx: ResolveKeyContext): KeyAction => {
   }
 
   const links = getLocationDirectedLinks(locations, last)
-  if ((key === 'ArrowLeft' || key === 'a' || key === 'A') && links.left) {
+  const goLeft =
+    key === 'ArrowLeft' || key === 'a' || key === 'A' || code === 'Numpad4'
+  const goUp =
+    key === 'ArrowUp' || key === 'w' || key === 'W' || code === 'Numpad8'
+  const goRight =
+    key === 'ArrowRight' || key === 'd' || key === 'D' || code === 'Numpad6'
+  const goDown =
+    key === 'ArrowDown' || key === 's' || key === 'S' || code === 'Numpad2'
+
+  if (goLeft && links.left) {
     return { type: 'add-location', location: links.left }
   }
-  if ((key === 'ArrowUp' || key === 'w' || key === 'W') && links.top) {
+  if (goUp && links.top) {
     return { type: 'add-location', location: links.top }
   }
-  if ((key === 'ArrowRight' || key === 'd' || key === 'D') && links.right) {
+  if (goRight && links.right) {
     return { type: 'add-location', location: links.right }
   }
-  if ((key === 'ArrowDown' || key === 's' || key === 'S') && links.bottom) {
+  if (goDown && links.bottom) {
     return { type: 'add-location', location: links.bottom }
   }
 

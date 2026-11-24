@@ -1,7 +1,7 @@
 import {
+  cycleBoardMode,
   selectMode,
   setGameMode,
-  togglePathLocationsMode,
   useGameStore,
 } from '@entities/game'
 import {
@@ -23,7 +23,7 @@ import {
   selectPathData,
   usePathStore,
 } from '@entities/path'
-import { useKeyup } from '@shared/lib'
+import { useKeydown } from '@shared/lib'
 import { useCallback } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { resolveKeyAction } from './resolveKeyAction'
@@ -38,8 +38,13 @@ export const useKeyboardControls = () => {
 
   const handler = useCallback(
     (event: KeyboardEvent) => {
+      if (event.repeat) {
+        return
+      }
+
       const action = resolveKeyAction({
         key: event.key,
+        code: event.code,
         ctrlKey: event.ctrlKey,
         metaKey: event.metaKey,
         shiftKey: event.shiftKey,
@@ -54,6 +59,8 @@ export const useKeyboardControls = () => {
         return
       }
 
+      event.preventDefault()
+
       switch (action.type) {
         case 'zoom-in':
           zoomIn()
@@ -62,7 +69,10 @@ export const useKeyboardControls = () => {
           zoomOut()
           break
         case 'toggle-mode':
-          setGameMode(togglePathLocationsMode(mode))
+          setGameMode(cycleBoardMode(mode))
+          break
+        case 'set-mode':
+          setGameMode(action.mode)
           break
         case 'reset-locations':
           resetLocationsType()
@@ -90,5 +100,5 @@ export const useKeyboardControls = () => {
     [history, historyIndex, locations, mode, path, zoomIn, zoomOut],
   )
 
-  useKeyup(handler)
+  useKeydown(handler)
 }
