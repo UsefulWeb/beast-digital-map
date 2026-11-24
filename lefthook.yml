@@ -5,6 +5,8 @@ pre-commit:
     biome:
       run: yarn biome check --write --staged --no-errors-on-unmatched --colors=off
       stage_fixed: true
+    test:
+      run: yarn test
 
 commit-msg:
   commands:

@@ -1,6 +1,12 @@
+import { isPwa } from './isPwa'
+
 export const requestAppFullscreen = async (
   element: HTMLElement = document.documentElement,
 ) => {
+  if (isPwa()) {
+    return
+  }
+
   try {
     if (!document.fullscreenElement) {
       await element.requestFullscreen()

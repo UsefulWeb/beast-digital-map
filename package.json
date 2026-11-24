@@ -10,7 +10,9 @@
     "prepare": "lefthook install",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@dotmind/react-use-pwa": "^1.0.4",
@@ -43,6 +45,7 @@
     "sass": "^1.108.2",
     "typescript": "^5",
     "vite": "^8.3.8",
-    "vite-plugin-pwa": "^2.0.0"
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^3.2.7"
   }
 }

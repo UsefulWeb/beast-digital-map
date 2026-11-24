@@ -1,8 +1,8 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vitest/config'
 import 'dotenv/config'
 
 import manifest from './baseManifest.js'
@@ -20,7 +20,47 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false,
       manifest,
+      includeAssets: [
+        'favicon.ico',
+        'favicon-16x16.png',
+        'favicon-32x32.png',
+        'apple-touch-icon.png',
+        'android-chrome-192x192.png',
+        'android-chrome-512x512.png',
+        'safari-pinned-tab.svg',
+        'fonts/**/*',
+        'images/**/*',
+        'data/**/*',
+      ],
+      workbox: {
+        // App shell + public maps/JSON/UI so boards work offline after first visit
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg,avif,jpg,jpeg,webp,woff,woff2,json,webmanifest}',
+        ],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) =>
+              request.destination === 'image' ||
+              url.pathname.includes('/images/') ||
+              url.pathname.includes('/data/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'beast-map-assets',
+              expiration: {
+                maxEntries: 120,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
     }),
   ],
   resolve: {
@@ -39,5 +79,9 @@ export default defineConfig({
   },
   preview: {
     port: Number(process.env.APP_PREVIEW_PORT) || 8080,
+  },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.{test,spec}.ts'],
   },
 })
