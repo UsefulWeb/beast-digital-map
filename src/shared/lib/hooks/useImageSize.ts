@@ -1,18 +1,19 @@
 import type { MapSize } from '@entities/map'
 import { useEffect, useState } from 'react'
+import { getViewportSize } from '../getViewportSize'
 
 export const getImageSize = (defaultSize?: MapSize) => {
-  const { innerWidth, innerHeight } = window
+  const { width: viewportWidth, height: viewportHeight } = getViewportSize()
   if (!defaultSize) {
-    return [innerWidth, innerHeight, 1] as const
+    return [viewportWidth, viewportHeight, 1] as const
   }
 
-  let height = innerHeight - 4
+  let height = viewportHeight - 4
   let ratio = height / defaultSize.height
   let width = ratio * defaultSize.width
 
-  if (width > innerWidth) {
-    width = innerWidth
+  if (width > viewportWidth) {
+    width = viewportWidth
     ratio = width / defaultSize.width
     height = ratio * defaultSize.height
   }
@@ -29,7 +30,18 @@ export const useImageSize = (imageSize: MapSize) => {
     }
     onResize()
     window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+    window.addEventListener('orientationchange', onResize)
+    document.addEventListener('fullscreenchange', onResize)
+
+    const vv = window.visualViewport
+    vv?.addEventListener('resize', onResize)
+
+    return () => {
+      window.removeEventListener('resize', onResize)
+      window.removeEventListener('orientationchange', onResize)
+      document.removeEventListener('fullscreenchange', onResize)
+      vv?.removeEventListener('resize', onResize)
+    }
   }, [imageSize])
 
   return size

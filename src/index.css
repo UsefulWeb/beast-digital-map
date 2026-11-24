@@ -19,7 +19,15 @@
 }
 
 html {
-  min-height: 100%;
+  background: #070a0c;
+  height: var(--app-height, 100dvh);
+  overflow: hidden;
+}
+
+body,
+#root {
+  height: var(--app-height, 100dvh);
+  overflow: hidden;
 }
 
 a {
@@ -34,5 +42,6 @@ a {
   background-size: cover;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  height: 100%;
+  height: var(--app-height, 100dvh);
+  overflow: hidden;
 }

@@ -38,25 +38,27 @@ export const HitArea = styled.div`
   border-radius: 50%;
   cursor: pointer;
 
-  &:hover:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 15%;
-    height: 15%;
-    border-radius: 50%;
-    box-shadow:
-      0 0 6px var(--color-hover),
-      inset 0 0 6px var(--color-hover),
-      0 0 12px var(--color-marker-start);
-    background: radial-gradient(
-      var(--color-hover),
-      color-mix(in srgb, var(--color-hover) 80%, var(--color-marker-start)),
-      color-mix(in srgb, var(--color-marker-start) 63%, transparent)
-    );
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 15%;
+      height: 15%;
+      border-radius: 50%;
+      box-shadow:
+        0 0 6px var(--color-hover),
+        inset 0 0 6px var(--color-hover),
+        0 0 12px var(--color-marker-start);
+      background: radial-gradient(
+        var(--color-hover),
+        color-mix(in srgb, var(--color-hover) 80%, var(--color-marker-start)),
+        color-mix(in srgb, var(--color-marker-start) 63%, transparent)
+      );
+    }
   }
 `
 

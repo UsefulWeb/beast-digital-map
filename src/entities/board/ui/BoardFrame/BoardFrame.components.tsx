@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 
 export const Viewport = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: var(--app-height, 100dvh);
   box-sizing: border-box;
   display: flex;
   justify-content: center;

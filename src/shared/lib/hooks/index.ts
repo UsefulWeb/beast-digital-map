@@ -1,3 +1,4 @@
+export { syncAppHeight, useAppViewportHeight } from './useAppViewportHeight'
 export { useAssetsProgress } from './useAssetsProgress'
 export { useDebounce } from './useDebounce'
 export { useFullscreen } from './useFullscreen'

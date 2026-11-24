@@ -14,21 +14,23 @@ export const Container = styled.div`
   pointer-events: auto;
   cursor: pointer;
 
-  &:hover::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10%;
-    height: 10%;
-    border-radius: 50%;
-    box-shadow:
-      0 0 10px #ffa92c,
-      inset 0 0 10px #ffa930,
-      0 0 30px red;
-    background: radial-gradient(#ffa92c, #ff7709, #ff0000a1);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10%;
+      height: 10%;
+      border-radius: 50%;
+      box-shadow:
+        0 0 10px #ffa92c,
+        inset 0 0 10px #ffa930,
+        0 0 30px red;
+      background: radial-gradient(#ffa92c, #ff7709, #ff0000a1);
+    }
   }
 `
 

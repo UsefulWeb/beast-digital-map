@@ -7,7 +7,7 @@ export const Shell = styled(Row)`
   left: 10vw;
   right: 10vw;
   z-index: 4;
-  height: 100vh;
+  height: var(--app-height, 100dvh);
   padding: 20px;
   gap: 5vw;
 
