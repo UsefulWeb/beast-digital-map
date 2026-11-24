@@ -20,6 +20,8 @@ const serialize = (entries: Array<string | AssetEntry>) =>
 export const useAssetsProgress = (
   entries: Array<string | AssetEntry>,
   enabled = true,
+  /** Bump to force a reload (e.g. retry after error). */
+  revision = 0,
 ): AssetsProgressState => {
   const [progress, setProgress] = useState(0)
   const [ready, setReady] = useState(false)
@@ -33,6 +35,9 @@ export const useAssetsProgress = (
       setError(null)
       return
     }
+
+    // `revision` is intentionally a dependency so retries remount this effect.
+    void revision
 
     const list = JSON.parse(serialized) as AssetEntry[]
     const controller = new AbortController()
@@ -54,12 +59,16 @@ export const useAssetsProgress = (
         if (controller.signal.aborted) {
           return
         }
+        // Ignore stray AbortError from a previous StrictMode pass / raced cache.
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return
+        }
         setError(err instanceof Error ? err : new Error(String(err)))
         setReady(false)
       })
 
     return () => controller.abort()
-  }, [enabled, serialized])
+  }, [enabled, serialized, revision])
 
   return { progress, ready, error }
 }

@@ -10,13 +10,20 @@ export const Root = styled.div`
   justify-content: center;
   padding: 0.5em;
   pointer-events: none;
-  font-size: 2.2vmin;
+  font-size: clamp(14px, 4.2vmin, 22px);
 
   @media (orientation: portrait) {
+    font-size: clamp(16px, 5.5vw, 24px);
+
     @media (min-height: 1024px) {
       top: auto;
       bottom: 0;
+      font-size: 16px;
     }
+  }
+
+  @media (orientation: landscape) and (min-height: 600px) {
+    font-size: 16px;
   }
 `
 

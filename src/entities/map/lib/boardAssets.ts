@@ -10,6 +10,8 @@ export const getHomeCriticalAssets = (): string[] => [
   url('images/ui/page-background.avif'),
   url('images/ui/logo.avif'),
   url('images/ui/button-background.avif'),
+  url('images/ui/backbutton.avif'),
+  url('images/ui/backbuttonHover.avif'),
 ]
 
 /** Prefetch map art for a family after the user picks it on Home. */
@@ -37,6 +39,8 @@ export const getBoardSessionAssets = (mapId: MapId) => {
     url('images/path/arrow.svg'),
     url('images/controls/clear-path.svg'),
     url('images/controls/clear-locations.svg'),
+    url('images/controls/lock-closed.svg'),
+    url('images/controls/lock-open.svg'),
     url('images/controls/back.svg'),
     url('images/controls/undo.svg'),
     url('images/controls/redo.svg'),

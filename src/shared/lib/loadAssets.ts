@@ -13,27 +13,35 @@ type LoadAssetsOptions = {
 const imageCache = new Map<string, Promise<void>>()
 const fetchCache = new Map<string, Promise<void>>()
 
-const loadImage = (url: string, signal?: AbortSignal) => {
+const abortError = () => new DOMException('Aborted', 'AbortError')
+
+/** Resolve when `signal` aborts; never poisons shared asset caches. */
+const whenAborted = (signal?: AbortSignal) => {
+  if (!signal) {
+    return null
+  }
+  if (signal.aborted) {
+    return Promise.reject(abortError())
+  }
+  return new Promise<never>((_, reject) => {
+    signal.addEventListener('abort', () => reject(abortError()), { once: true })
+  })
+}
+
+const raceAbort = <T>(promise: Promise<T>, signal?: AbortSignal) => {
+  const aborted = whenAborted(signal)
+  return aborted ? Promise.race([promise, aborted]) : promise
+}
+
+const loadImageOnce = (url: string) => {
   const cached = imageCache.get(url)
   if (cached) {
     return cached
   }
 
   const promise = new Promise<void>((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(new DOMException('Aborted', 'AbortError'))
-      return
-    }
-
     const image = new Image()
-    const onAbort = () => {
-      image.src = ''
-      reject(new DOMException('Aborted', 'AbortError'))
-    }
-    signal?.addEventListener('abort', onAbort, { once: true })
-
     image.onload = () => {
-      signal?.removeEventListener('abort', onAbort)
       const decode = image.decode?.()
       if (decode) {
         decode.then(() => resolve()).catch(() => resolve())
@@ -42,7 +50,6 @@ const loadImage = (url: string, signal?: AbortSignal) => {
       resolve()
     }
     image.onerror = () => {
-      signal?.removeEventListener('abort', onAbort)
       reject(new Error(`Failed to load image: ${url}`))
     }
     image.src = url
@@ -55,13 +62,13 @@ const loadImage = (url: string, signal?: AbortSignal) => {
   return promise
 }
 
-const loadFetch = async (url: string, signal?: AbortSignal) => {
+const loadFetchOnce = (url: string) => {
   const cached = fetchCache.get(url)
   if (cached) {
     return cached
   }
 
-  const promise = fetch(url, signal ? { signal } : undefined)
+  const promise = fetch(url)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Failed to fetch ${url}: ${response.status}`)
@@ -120,9 +127,9 @@ export const loadAssets = async (
   await Promise.all(
     list.map(async (entry) => {
       if (entry.kind === 'fetch') {
-        await loadFetch(entry.url, signal)
+        await raceAbort(loadFetchOnce(entry.url), signal)
       } else {
-        await loadImage(entry.url, signal)
+        await raceAbort(loadImageOnce(entry.url), signal)
       }
       tick()
     }),

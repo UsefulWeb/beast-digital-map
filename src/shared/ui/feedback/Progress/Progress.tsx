@@ -8,8 +8,10 @@ export const Progress = (props: ProgressProps) => {
   const { value } = props
 
   return (
-    <C.Container>
-      <C.Value $value={value} />
-    </C.Container>
+    <C.Shell>
+      <C.Container>
+        <C.Value $value={value} />
+      </C.Container>
+    </C.Shell>
   )
 }
