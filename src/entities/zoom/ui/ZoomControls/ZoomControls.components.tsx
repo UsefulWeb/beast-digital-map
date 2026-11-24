@@ -6,6 +6,10 @@ export const ZoomRow = styled(Stack)`
     /* match undo/redo top padding so magnifier circles share their baseline */
     margin-top: 2.1em;
     gap: 0;
+
+    @media (min-height: 1024px) {
+      margin-top: 0;
+    }
   }
 `
 

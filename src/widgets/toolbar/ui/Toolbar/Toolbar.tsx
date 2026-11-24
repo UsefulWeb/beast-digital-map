@@ -56,19 +56,16 @@ export const Toolbar = () => {
                   />
                 </C.ClearSlot>
               </HelpTip>
-              <Stack
-                gap="1em"
-                padding="1em 0.4em 0"
-                portrait="row"
-                align="center"
-              >
-                <HelpTip label="Undo">
-                  <Undo />
-                </HelpTip>
-                <HelpTip label="Redo">
-                  <Redo />
-                </HelpTip>
-              </Stack>
+              <C.HistorySlot>
+                <Stack gap="1em" portrait="row" align="center">
+                  <HelpTip label="Undo">
+                    <Undo />
+                  </HelpTip>
+                  <HelpTip label="Redo">
+                    <Redo />
+                  </HelpTip>
+                </Stack>
+              </C.HistorySlot>
             </>
           )}
           {!isMovementMode && (

@@ -30,8 +30,12 @@ export const Root = styled.div`
   @media (orientation: portrait) {
     font-size: 2.4vw;
 
+    /* same breakpoint as ToolbarPanel top dock — sit under the bar, top-right */
     @media (min-height: 1024px) {
       font-size: 14px;
+      /* toolbar ~8.1em@12px + border; keep a small gap below */
+      top: calc(110px + env(safe-area-inset-top, 0px));
+      right: calc(1em + env(safe-area-inset-right, 0px));
     }
   }
 `
