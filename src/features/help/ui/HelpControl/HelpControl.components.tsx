@@ -23,8 +23,13 @@ export const Root = styled.div`
   pointer-events: none;
   font-size: 1.7vmin;
 
-  @media (orientation: landscape) and (min-height: 600px) {
-    font-size: 12px;
+  @media (orientation: landscape) {
+    /* phones in landscape: vmin is tiny — keep the fab readable/centered */
+    font-size: clamp(12px, 3.8vmin, 16px);
+
+    @media (min-height: 600px) {
+      font-size: 12px;
+    }
   }
 
   @media (orientation: portrait) {
@@ -121,8 +126,10 @@ export const Fab = styled.button<{ $active: boolean }>`
   line-height: 1;
   cursor: pointer;
   box-shadow: 0 0.25em 0.9em rgb(0 0 0 / 40%);
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   flex-shrink: 0;
 
   &:hover {
@@ -136,8 +143,10 @@ export const Fab = styled.button<{ $active: boolean }>`
 `
 
 export const FabMark = styled.span`
-  font-size: 1.85em;
+  font-size: 1.45em;
   font-weight: 800;
   line-height: 1;
-  transform: translateY(0.02em);
+  display: block;
+  /* Optimus "?" sits high/left — optical center in the circle */
+  transform: translate(0.04em, 0.08em);
 `
