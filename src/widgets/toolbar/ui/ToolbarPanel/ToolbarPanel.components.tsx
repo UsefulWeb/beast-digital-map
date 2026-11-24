@@ -3,7 +3,7 @@ import { BASE_URL } from '@shared/config'
 import { Stack } from '@shared/ui'
 
 export const Panel = styled(Stack)`
-  background: url(${BASE_URL}images/ui/navigation-background.png) no-repeat;
+  background: url(${BASE_URL}images/ui/navigation-background.avif) no-repeat;
   background-size: cover;
   position: fixed;
   padding: 1.5em 0;
@@ -24,7 +24,7 @@ export const Panel = styled(Stack)`
     position: absolute;
     left: 100%;
     top: 0;
-    background: url(${BASE_URL}images/ui/border-vertical.png) center center
+    background: url(${BASE_URL}images/ui/border-vertical.avif) center center
       no-repeat;
     background-size: cover;
   }
@@ -47,13 +47,13 @@ export const Panel = styled(Stack)`
     &:after {
       left: 0;
       bottom: 100%;
-      background-image: url(${BASE_URL}images/ui/border-horizontal.png);
+      background-image: url(${BASE_URL}images/ui/border-horizontal.avif);
       height: 0.5em;
       width: 100%;
     }
 
     @media (min-height: 1024px) {
-      padding: 1em 1.5em;
+      padding: 0.55em 1.5em;
       font-size: 12px;
       top: 0;
       bottom: auto;

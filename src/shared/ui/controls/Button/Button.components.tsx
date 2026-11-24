@@ -3,7 +3,7 @@ import { BASE_URL } from '@shared/config'
 
 export const Root = styled.button`
   box-sizing: border-box;
-  background: url(${BASE_URL}images/ui/button-background.png) center center
+  background: url(${BASE_URL}images/ui/button-background.avif) center center
     no-repeat;
   background-size: 100%;
   background-color: transparent;

@@ -50,7 +50,7 @@ export const MovementsButton = () => {
       onClick={() => setGameMode(getNextMovementMode(gameMode, lastMode))}
       type="button"
     >
-      <C.Image src={`${BASE_URL}images/movement/back.jpg`} alt="" />
+      <C.Image src={`${BASE_URL}images/movement/back.avif`} alt="" />
     </C.Button>
   )
 }

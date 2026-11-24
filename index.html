@@ -23,18 +23,12 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#000000">
 
-    <link rel="preload" as="image" href="%BASE_URL%images/ui/page-background.jpg">
-
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/back.jpg">
-
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/prev.png">
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/next.png">
-
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/east.png">
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/west.png">
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/north.png">
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/south.png">
-    <link rel="preload" as="image" href="%BASE_URL%images/movement/no-movement.png">
+    <!-- Home-critical only; board session assets are hinted/loaded at runtime -->
+    <link rel="preload" as="image" href="%BASE_URL%images/ui/page-background.avif">
+    <link rel="preload" as="image" href="%BASE_URL%images/ui/logo.avif">
+    <link rel="preload" as="image" href="%BASE_URL%images/ui/button-background.avif">
+    <!-- fonts injected by unplugin-inject-preload on build -->
+    <!--__unplugin-inject-preload__-->
 
     <title>Beast Digital Map</title>
   </head>

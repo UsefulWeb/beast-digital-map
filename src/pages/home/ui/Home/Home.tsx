@@ -1,25 +1,42 @@
 import {
+  getFamilyMapPrefetch,
+  getHomeCriticalAssets,
   getMapsByFamily,
   MAP_FAMILIES,
   MapFamily,
   type MapFamily as MapFamilyId,
 } from '@entities/map'
 import { BASE_URL } from '@shared/config'
+import { injectAssetHints } from '@shared/lib'
 import { BackButton, Button } from '@shared/ui'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
 import { Credits } from '../Credits'
 import { HomeLayout } from '../HomeLayout'
 import { HomeLogo } from '../HomeLogo'
 import * as C from './Home.components'
 
-const logo = `${BASE_URL}images/ui/logo.png`
+const logo = `${BASE_URL}images/ui/logo.avif`
 
 export const Home = () => {
   const [, setLocation] = useLocation()
   const [family, setFamily] = useState<MapFamilyId | null>(null)
 
   const maps = family ? getMapsByFamily(family) : []
+
+  useEffect(() => {
+    injectAssetHints(getHomeCriticalAssets(), { rel: 'preload', as: 'image' })
+  }, [])
+
+  useEffect(() => {
+    if (!family) {
+      return
+    }
+    injectAssetHints(getFamilyMapPrefetch(family), {
+      rel: 'prefetch',
+      as: 'image',
+    })
+  }, [family])
 
   return (
     <HomeLayout>

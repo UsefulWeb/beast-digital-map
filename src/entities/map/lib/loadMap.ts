@@ -62,29 +62,3 @@ export const getMapResource = (id: MapId): Promise<MapData> => {
   mapResourceCache.set(id, promise)
   return promise
 }
-
-export const preloadMapAssets = (id: MapId) => {
-  const info = getMapInfo(id)
-  if (!info || typeof document === 'undefined') {
-    return
-  }
-
-  const ensureLink = (rel: string, href: string, asType: string) => {
-    const selector = `link[data-map-preload="${href}"]`
-    if (document.querySelector(selector)) {
-      return
-    }
-    const link = document.createElement('link')
-    link.rel = rel
-    link.href = href
-    link.as = asType
-    link.dataset.mapPreload = href
-    if (asType === 'fetch') {
-      link.crossOrigin = 'anonymous'
-    }
-    document.head.append(link)
-  }
-
-  ensureLink('preload', info.image, 'image')
-  ensureLink('preload', info.data, 'fetch')
-}

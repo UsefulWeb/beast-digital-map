@@ -12,11 +12,11 @@ import { useState } from 'react'
 import { MovementImage } from '../MovementImage'
 
 const DIRECTION_IMAGES = {
-  east: `${BASE_URL}images/movement/east.png`,
-  south: `${BASE_URL}images/movement/south.png`,
-  west: `${BASE_URL}images/movement/west.png`,
-  north: `${BASE_URL}images/movement/north.png`,
-  none: `${BASE_URL}images/movement/no-movement.png`,
+  east: `${BASE_URL}images/movement/east.avif`,
+  south: `${BASE_URL}images/movement/south.avif`,
+  west: `${BASE_URL}images/movement/west.avif`,
+  north: `${BASE_URL}images/movement/north.avif`,
+  none: `${BASE_URL}images/movement/no-movement.avif`,
 } as const
 
 export const Movements = () => {
@@ -50,8 +50,8 @@ export const Movements = () => {
       hasPrev={hasPrev}
       hasNext={hasNext}
       indexLabel={index + 1}
-      prevIcon={`${BASE_URL}images/movement/prev.png`}
-      nextIcon={`${BASE_URL}images/movement/next.png`}
+      prevIcon={`${BASE_URL}images/movement/prev.avif`}
+      nextIcon={`${BASE_URL}images/movement/next.avif`}
     >
       <MovementImage src={DIRECTION_IMAGES[direction]} alt="" />
     </CarouselNav>

@@ -1,9 +1,10 @@
+import { isMobile } from './isMobile'
 import { isPwa } from './isPwa'
 
 export const requestAppFullscreen = async (
   element: HTMLElement = document.documentElement,
 ) => {
-  if (isPwa()) {
+  if (!isMobile() || isPwa()) {
     return
   }
 

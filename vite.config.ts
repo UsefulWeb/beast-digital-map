@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
+import unpluginInjectPreload from 'unplugin-inject-preload/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vitest/config'
 import 'dotenv/config'
@@ -17,6 +18,19 @@ export default defineConfig({
       babel: {
         plugins: ['@emotion/babel-plugin'],
       },
+    }),
+    unpluginInjectPreload({
+      files: [
+        {
+          outputMatch: /optimusprinceps.*\.woff2$/,
+          attributes: {
+            as: 'font',
+            type: 'font/woff2',
+            crossorigin: 'anonymous',
+          },
+        },
+      ],
+      injectTo: 'custom',
     }),
     VitePWA({
       registerType: 'autoUpdate',
