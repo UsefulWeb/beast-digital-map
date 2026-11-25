@@ -2,6 +2,7 @@ import { ClassNames } from '@emotion/react'
 import { BoardRoot } from '@entities/board'
 import { GameMode, ModeSwitch, selectMode, useGameStore } from '@entities/game'
 import type { MapData } from '@entities/map'
+import { ZoomProvider } from '@entities/zoom'
 import { HelpControl } from '@features/help'
 import { useKeyboardControls } from '@features/keyboard-controls'
 import { useImageSize } from '@shared/lib'
@@ -89,13 +90,15 @@ export const Board = (props: BoardProps) => {
         onWheelStart={beginTransform}
         onWheelStop={endTransform}
       >
-        <BoardContent
-          mapUrl={mapUrl}
-          width={width}
-          height={height}
-          ratio={ratio}
-          transforming={transforming}
-        />
+        <ZoomProvider>
+          <BoardContent
+            mapUrl={mapUrl}
+            width={width}
+            height={height}
+            ratio={ratio}
+            transforming={transforming}
+          />
+        </ZoomProvider>
       </TransformWrapper>
     </BoardRoot>
   )
