@@ -22,7 +22,7 @@ export const HelpControl = () => {
           onClick={() => setHelpActive(false)}
         />
       )}
-      <C.Root>
+      <C.Root $helpActive={helpActive}>
         <C.Fab
           type="button"
           $active={helpActive}

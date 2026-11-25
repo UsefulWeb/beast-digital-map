@@ -5,7 +5,8 @@ export const Root = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 4;
+  /* above help tips/backdrop so modes stay usable while tips are open */
+  z-index: 21;
   display: flex;
   justify-content: center;
   padding: 0.5em;

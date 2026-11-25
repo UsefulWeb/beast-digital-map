@@ -11,7 +11,7 @@ export const Backdrop = styled.button`
   cursor: default;
 `
 
-export const Root = styled.div`
+export const Root = styled.div<{ $helpActive?: boolean }>`
   position: fixed;
   top: calc(0.75em + env(safe-area-inset-top, 0px));
   right: calc(1em + env(safe-area-inset-right, 0px));
@@ -34,8 +34,13 @@ export const Root = styled.div`
 
   @media (orientation: portrait) {
     font-size: 2.4vw;
+    /* ModeSwitch sits at the top — park tips below it */
+    top: ${({ $helpActive }) =>
+      $helpActive
+        ? 'calc(22vw + env(safe-area-inset-top, 0px))'
+        : 'calc(12vw + env(safe-area-inset-top, 0px))'};
 
-    /* same breakpoint as ToolbarPanel top dock — sit under the bar, top-right */
+    /* same breakpoint as ToolbarPanel top dock — ModeSwitch moves to bottom */
     @media (min-height: 1024px) {
       font-size: 14px;
       /* toolbar icons + asymmetric pad@13px + border; keep a small gap below */
@@ -56,6 +61,16 @@ export const Panel = styled.aside`
   color: #f3ebe0;
   box-shadow: 0 0.4em 1.4em rgb(0 0 0 / 45%);
   border: 1px solid rgb(255 169 44 / 35%);
+
+  @media (orientation: portrait) {
+    /* leave room for ModeSwitch (top) + toolbar (bottom) */
+    max-height: min(55vh, 28em);
+
+    @media (min-height: 1024px) {
+      /* ModeSwitch is at the bottom on tall portrait */
+      max-height: min(60vh, 32em);
+    }
+  }
 `
 
 export const PanelTitle = styled.h2`
