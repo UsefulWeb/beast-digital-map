@@ -6,8 +6,8 @@ import {
   MapFamily,
   type MapFamily as MapFamilyId,
 } from '@entities/map'
+import { injectAssetHints, useAssetsProgress } from '@shared/api'
 import { BASE_URL } from '@shared/config'
-import { injectAssetHints, useAssetsProgress } from '@shared/lib'
 import { BackButton, Button, ErrorFallback, LoadingGate } from '@shared/ui'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'wouter'

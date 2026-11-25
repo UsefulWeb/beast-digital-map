@@ -1,3 +1,4 @@
+import { fetchJson } from '@shared/api'
 import { type LocationItem, MapMeepleType, toMeeple } from '../../location'
 import type { MapData, MapId, MapJson, MapJsonItem } from '../model/types'
 import { getMapInfo } from './catalog'
@@ -42,12 +43,7 @@ export const loadMapData = async (id: MapId): Promise<MapData> => {
     throw new Error(`Unknown map: ${id}`)
   }
 
-  const response = await fetch(info.data)
-  if (!response.ok) {
-    throw new Error(`Failed to load map data: ${response.status}`)
-  }
-
-  const raw = (await response.json()) as MapJson
+  const raw = await fetchJson<MapJson>(info.data)
   return parseMapData(id, raw)
 }
 

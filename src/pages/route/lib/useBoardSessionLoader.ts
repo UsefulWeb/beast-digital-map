@@ -3,7 +3,7 @@ import {
   getBoardSessionAssets,
   type MapId,
 } from '@entities/map'
-import { hintAssetEntries, useAssetsProgress } from '@shared/lib'
+import { hintAssetEntries, useAssetsProgress } from '@shared/api'
 import { useEffect, useMemo, useState } from 'react'
 
 /** Load + hint all board-session assets; expose progress and retry. */
