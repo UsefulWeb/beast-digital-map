@@ -32,7 +32,7 @@ export const Meeple = ({ meeple, onInjure }: MeepleProps) => {
         $outline={MEEPLE_OUTLINE[meeple.type]}
         $farmer={meeple.type === MapMeepleType.FARMER}
       >
-        <MeepleWounds wounds={meeple.wounds} />
+        <MeepleWounds health={meeple.health} wounds={meeple.wounds} />
       </C.Item>
     </C.Container>
   )

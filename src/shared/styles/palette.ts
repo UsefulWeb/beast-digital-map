@@ -12,6 +12,8 @@ export const palette = {
   markerVisited: '#5d7d3a',
   /** Path start — terracotta / clay red from settlements */
   markerStart: '#9a4a36',
+  /** Meeple wound ring — same clay family, a touch hotter for read */
+  wound: '#b44a38',
   /** Path end / current — water teal from Drenched Lands */
   markerEnd: '#0c6e84',
   hover: '#ffa92c',
@@ -27,6 +29,7 @@ export const paletteCss = `
     --color-accent: ${palette.accent};
     --color-marker-visited: ${palette.markerVisited};
     --color-marker-start: ${palette.markerStart};
+    --color-wound: ${palette.wound};
     --color-marker-end: ${palette.markerEnd};
     --color-hover: ${palette.hover};
     --color-ink: ${palette.ink};

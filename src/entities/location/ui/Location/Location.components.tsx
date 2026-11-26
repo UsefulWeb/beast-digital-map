@@ -72,6 +72,9 @@ const terrainStyles: Partial<Record<Terrain, ReturnType<typeof css>>> = {
   [Terrain.SWAMP]: css`
     background-color: #75007120;
   `,
+  [Terrain.ABYSS]: css`
+    background-color: #5a101820;
+  `,
 }
 
 export const Background = styled.div<{

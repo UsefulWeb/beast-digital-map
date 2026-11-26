@@ -13,7 +13,7 @@ export const Backdrop = styled.button`
 
 export const Root = styled.div<{ $helpActive?: boolean }>`
   position: fixed;
-  top: calc(0.75em + env(safe-area-inset-top, 0px));
+  top: calc(1.5em + env(safe-area-inset-top, 0px));
   right: calc(1em + env(safe-area-inset-right, 0px));
   z-index: 20;
   display: flex;
@@ -34,11 +34,16 @@ export const Root = styled.div<{ $helpActive?: boolean }>`
 
   @media (orientation: portrait) {
     font-size: 2.4vw;
-    /* ModeSwitch sits at the top — park tips below it */
-    top: ${({ $helpActive }) =>
+    /* closed: same top-right park as landscape */
+    top: calc(1.5em + env(safe-area-inset-top, 0px));
+
+    ${({ $helpActive }) =>
       $helpActive
-        ? 'calc(22vw + env(safe-area-inset-top, 0px))'
-        : 'calc(12vw + env(safe-area-inset-top, 0px))'};
+        ? `
+      /* open: drop under ModeSwitch so tips clear the strip */
+      top: calc(14vw + env(safe-area-inset-top, 0px));
+    `
+        : ''}
 
     /* same breakpoint as ToolbarPanel top dock — ModeSwitch moves to bottom */
     @media (min-height: 1024px) {

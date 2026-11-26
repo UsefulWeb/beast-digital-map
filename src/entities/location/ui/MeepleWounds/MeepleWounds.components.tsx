@@ -10,10 +10,18 @@ export const Container = styled.div`
 
 export const Markers = styled.svg`
   position: absolute;
-  opacity: 0.9;
+  opacity: 0.92;
   width: 95%;
   height: 95%;
   left: 2.5%;
   top: 2.5%;
-  filter: drop-shadow(0 0 1px white);
+  filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%));
+
+  .wound {
+    fill: var(--color-wound);
+  }
+
+  .slot {
+    fill: rgb(17 17 17 / 22%);
+  }
 `

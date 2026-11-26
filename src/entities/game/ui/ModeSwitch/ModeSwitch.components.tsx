@@ -65,6 +65,7 @@ export const Item = styled.button<{ $active: boolean; $help?: boolean }>`
     flex-shrink: 0;
   }
 
+  /* ModeSwitch docks at the bottom on tall portrait — labels above icons */
   @media (orientation: portrait) and (min-height: 1024px) {
     flex-direction: column-reverse;
   }

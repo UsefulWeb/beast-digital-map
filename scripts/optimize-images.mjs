@@ -19,6 +19,7 @@ const targets = [
   'images/locations/mixed.png',
   'images/locations/settlement.png',
   'images/locations/swamp.png',
+  'images/locations/abyss.png',
   'images/movement/back.jpg',
   'images/movement/east.png',
   'images/movement/west.png',

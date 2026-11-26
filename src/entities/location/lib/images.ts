@@ -27,4 +27,8 @@ export const TERRAIN_IMAGES: Record<Terrain, TerrainImage> = {
     url: `${BASE_URL}images/locations/swamp.avif`,
     size: 66,
   },
+  [Terrain.ABYSS]: {
+    url: `${BASE_URL}images/locations/abyss.avif`,
+    size: 66,
+  },
 }

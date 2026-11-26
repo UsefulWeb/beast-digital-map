@@ -1,8 +1,50 @@
-const FOUR_PIE_SEGMENT = [
-  'M3977 1892 c-98 -304 -260 -553 -491 -753 -119 -104 -212 -166 -356 -238 -99 -50 -282 -116 -372 -136 l-28 -5 0 -366 0 -365 48 7 c26 3 115 23 199 45 889 224 1569 940 1752 1846 12 55 21 104 21 107 0 3 -163 6 -362 6 l-363 0 -48 -148z',
-  'M2730 4385 l0 -365 28 -5 c15 -4 78 -22 140 -42 423 -133 779 -437 982 -841 45 -89 140 -351 140 -387 0 -13 48 -15 365 -15 257 0 365 3 365 11 0 6 -9 57 -21 112 -192 953 -928 1686 -1883 1877 -54 11 -102 20 -107 20 -5 0 -9 -158 -9 -365z',
-  'M1930 4730 c-141 -29 -279 -69 -398 -116 -764 -297 -1319 -957 -1481 -1761 -12 -55 -21 -106 -21 -112 0 -8 108 -11 365 -11 l365 0 5 28 c4 15 24 83 46 152 165 523 616 950 1150 1088 l74 19 3 367 c2 290 0 366 -10 365 -7 0 -51 -9 -98 -19z',
-  'M30 2034 c0 -3 9 -52 21 -107 183 -906 864 -1623 1752 -1846 84 -21 171 -41 195 -45 l42 -6 -2 366 -3 367 -71 18 c-454 118 -856 446 -1067 872 -42 85 -99 240 -127 345 l-11 42 -364 0 c-201 0 -365 -3 -365 -6z',
-]
+const CX = 2390
+const CY = 2390
+const OUTER_R = 2280
+const INNER_R = 1720
 
-export const get4PieSegment = (index: number) => FOUR_PIE_SEGMENT[index]
+const polar = (radius: number, angle: number) =>
+  [CX + radius * Math.cos(angle), CY + radius * Math.sin(angle)] as const
+
+/** Full donut ring (health === 1). */
+const fullRingPath = () => {
+  const [ox, oy] = polar(OUTER_R, -Math.PI / 2)
+  const [ix, iy] = polar(INNER_R, -Math.PI / 2)
+  return [
+    `M ${ox} ${oy}`,
+    `A ${OUTER_R} ${OUTER_R} 0 1 1 ${ox - 0.01} ${oy}`,
+    `L ${ix - 0.01} ${iy}`,
+    `A ${INNER_R} ${INNER_R} 0 1 0 ${ix} ${iy}`,
+    'Z',
+  ].join(' ')
+}
+
+/**
+ * Donut wedge for segment `index` of `total`, starting at 12 o'clock.
+ * Small gaps between wedges when total > 1.
+ */
+export const getPieSegmentPath = (index: number, total: number) => {
+  if (total <= 1) {
+    return fullRingPath()
+  }
+
+  const gap = Math.min(0.06, (2 * Math.PI) / total / 8)
+  const slice = (2 * Math.PI) / total
+  const a0 = -Math.PI / 2 + index * slice + gap / 2
+  const a1 = -Math.PI / 2 + (index + 1) * slice - gap / 2
+  const sweep = a1 - a0
+  const large = sweep > Math.PI ? 1 : 0
+
+  const [x0, y0] = polar(OUTER_R, a0)
+  const [x1, y1] = polar(OUTER_R, a1)
+  const [x2, y2] = polar(INNER_R, a1)
+  const [x3, y3] = polar(INNER_R, a0)
+
+  return [
+    `M ${x0} ${y0}`,
+    `A ${OUTER_R} ${OUTER_R} 0 ${large} 1 ${x1} ${y1}`,
+    `L ${x2} ${y2}`,
+    `A ${INNER_R} ${INNER_R} 0 ${large} 0 ${x3} ${y3}`,
+    'Z',
+  ].join(' ')
+}

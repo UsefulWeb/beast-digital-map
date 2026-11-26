@@ -41,9 +41,15 @@ export const Badge = styled.span<{ $align?: 'center' | 'end' }>`
 
   @media (orientation: portrait) {
     font-size: 2.1vw;
+    /* toolbar is at the bottom — keep labels above the buttons */
+    top: auto;
+    bottom: calc(100% + 0.25em);
 
     @media (min-height: 1024px) {
       font-size: 12px;
+      /* toolbar flips to the top — labels go below again */
+      top: calc(100% + 0.25em);
+      bottom: auto;
     }
   }
 `

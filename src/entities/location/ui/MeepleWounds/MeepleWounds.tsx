@@ -1,16 +1,18 @@
-import { get4PieSegment } from '../../lib'
+import { getPieSegmentPath } from '../../lib'
 import * as C from './MeepleWounds.components'
 
 export type MeepleWoundsProps = {
+  health: number
   wounds: number
 }
 
-export const MeepleWounds = ({ wounds }: MeepleWoundsProps) => {
-  if (wounds <= 0) {
+export const MeepleWounds = (props: MeepleWoundsProps) => {
+  const { health, wounds } = props
+  if (wounds <= 0 || health <= 0) {
     return null
   }
 
-  const woundsList = Array.from({ length: wounds }, (_, key) => key)
+  const segments = Array.from({ length: health }, (_, index) => index)
 
   return (
     <C.Container>
@@ -20,9 +22,16 @@ export const MeepleWounds = ({ wounds }: MeepleWoundsProps) => {
         height="478"
         viewBox="0 0 4780 4780"
       >
-        {woundsList.map((key) => (
-          <path key={key} fill="red" d={get4PieSegment(key)} />
-        ))}
+        {segments.map((index) => {
+          const wounded = index < wounds
+          return (
+            <path
+              key={index}
+              className={wounded ? 'wound' : 'slot'}
+              d={getPieSegmentPath(index, health)}
+            />
+          )
+        })}
       </C.Markers>
     </C.Container>
   )

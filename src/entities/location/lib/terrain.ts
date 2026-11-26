@@ -6,6 +6,7 @@ export const USER_TERRAINS: Terrain[] = [
   Terrain.CAVES,
   Terrain.FOREST,
   Terrain.SETTLEMENT,
+  Terrain.ABYSS,
 ]
 
 export const getNextTerrain = (location: LocationItem): Terrain => {

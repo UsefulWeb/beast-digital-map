@@ -39,9 +39,9 @@ export const MEEPLE_HEALTH: Record<MapMeepleType, number> = {
 /** Multiplier vs base meeple image size (80%). */
 export const MEEPLE_IMAGE_SCALE: Record<MapMeepleType, number> = {
   [MapMeepleType.SHEEP]: 1.2,
-  [MapMeepleType.NOBLE]: 1,
+  [MapMeepleType.NOBLE]: 1.2,
   [MapMeepleType.BOAR]: 1.1,
-  [MapMeepleType.FARMER]: 0.75,
+  [MapMeepleType.FARMER]: 0.8,
   [MapMeepleType.BEAR]: 1.2,
   [MapMeepleType.SABRETOOTH]: 1,
   [MapMeepleType.NO_MEEPLE]: 1,
