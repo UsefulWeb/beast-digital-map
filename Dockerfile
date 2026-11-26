@@ -10,6 +10,9 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --ignore-scripts
 
 COPY . /app
+# Domain root (minimap.studiomidhall.com) — do not use the GH Pages subpath.
+# Set before build so it wins over any APP_BASE_PATH in the copied .env.
+ENV APP_BASE_PATH=/
 RUN yarn build
 
 
